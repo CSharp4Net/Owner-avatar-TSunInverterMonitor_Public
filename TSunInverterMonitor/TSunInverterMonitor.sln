@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Logic\Contract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Test", "Test\Service.Test\Service.Test.csproj", "{7C9CFE7B-7E0C-4AE6-A7EC-876300C238CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinApp", "WinApp\WinApp.csproj", "{78748FC2-0ECA-4F67-A8AF-984A8AEFBD47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{7C9CFE7B-7E0C-4AE6-A7EC-876300C238CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C9CFE7B-7E0C-4AE6-A7EC-876300C238CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C9CFE7B-7E0C-4AE6-A7EC-876300C238CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78748FC2-0ECA-4F67-A8AF-984A8AEFBD47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78748FC2-0ECA-4F67-A8AF-984A8AEFBD47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78748FC2-0ECA-4F67-A8AF-984A8AEFBD47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78748FC2-0ECA-4F67-A8AF-984A8AEFBD47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
