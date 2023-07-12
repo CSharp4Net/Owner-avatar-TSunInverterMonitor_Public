@@ -2,14 +2,18 @@
 
 ## General info
 Abrufen und Anzeigen von Daten zu T-SUN Wechselrichtern, als Alternative zur T-SUN App und dem Web-UI.
-* [Login & Logout](#Login-&-Logout)
+
+Die Lösung enthält eine .NET-Solution, unterteilt in mehrere C#-Projekte.
 
 ## Getting Started
+* [Login & Logout](#Login-&-Logout)
+* [Alle Stationen abrufen](#Alle-Stationen-abrufen)
+* [Details einer Station abrufen](#Details-einer-Station-abrufen)
+* [Historie einer Station abrufen](#Historie-einer-Station-abrufen)
 
 ### Login & Logout
 ```
 IConnection connection = new Connection();
-
 LoginCredentials credentials = new LoginCredentials
 {
     UserName = "your account name",
@@ -18,16 +22,36 @@ LoginCredentials credentials = new LoginCredentials
 
 // Login
 var loginResult = connection.Login(credentials).Result;
-
 if (!loginResult.Successful) 
   Assert.IsTrue(loginResult.Successful, loginResult.ErrorMessage);
 
-// Get data
-var stations = connection.GetStations().Result;
-Assert.IsNotNull(stations, loginResult.ErrorMessage);
-
-// do something, e.g. look in stations-member
-
 // Logout
 var loggedOut = connection.Logout().Result;
+```
+
+### Alle Stationen abrufen
+```
+var stations = connection.GetStations().Result;
+
+// Wenn NULL, Fehler beim Abrufen
+Assert.IsNotNull(stations, loginResult.ErrorMessage);
+```
+
+### Details einer Station abrufen
+```
+int stationId = 123456790; // set your station id here
+
+var stationDetails = connection.GetStationDetails(stationId).Result;
+
+// Wenn NULL, Fehler beim Abrufen
+Assert.IsNotNull(stationDetails, loginResult.ErrorMessage);
+```
+
+### Historie einer Station abrufen
+```
+List<string> guids = new List<string> { "guid of your station" }; // add your station guid(s) here
+
+var aggregationOfDay = connection.GetStationAggregationOfDay(guids, DateTime.Today).Result;
+var aggregationOfMonth = connection.GetStationAggregationOfMonth(guids, 2023, 7).Result;
+var aggregationOfYear = connection.GetStationAggregationOfYear(guids, 2023).Result;
 ```
