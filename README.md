@@ -2,12 +2,14 @@
 
 ## General info
 Abrufen und Anzeigen von Daten zu T-SUN Wechselrichtern, als Alternative zur T-SUN App und dem Web-UI.
+
+Die Lösung enthält eine .NET-Solution, unterteilt in mehrere C#-Projekte.
+
+## Getting Started
 * [Login & Logout](#Login-&-Logout)
 * [Alle Stationen abrufen](#Alle-Stationen-abrufen)
 * [Details einer Station abrufen](#Details-einer-Station-abrufen)
 * [Historie einer Station abrufen](#Historie-einer-Station-abrufen)
-
-## Getting Started
 
 ### Login & Logout
 ```
