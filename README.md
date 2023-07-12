@@ -1,7 +1,13 @@
-# TSunInverterMonitor_Public
-Alternatives Abrufen und Anzeigen von Daten zu T-SUN Wechselrichtern mit lokale Speicherung
+# TSunInverterMonitor
 
-# Sample Code
+## General info
+Abrufen und Anzeigen von Daten zu T-SUN Wechselrichtern, als Alternative zur T-SUN App und dem Web-UI.
+* [Login & Logout](### Login & Logout)
+
+## Getting Started
+
+### Login & Logout
+```
 IConnection connection = new Connection();
 
 LoginCredentials credentials = new LoginCredentials
@@ -24,3 +30,4 @@ Assert.IsNotNull(stations, loginResult.ErrorMessage);
 
 // Logout
 var loggedOut = connection.Logout().Result;
+```
