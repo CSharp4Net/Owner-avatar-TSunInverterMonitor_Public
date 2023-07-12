@@ -2,7 +2,7 @@
 
 ## General info
 Abrufen und Anzeigen von Daten zu T-SUN Wechselrichtern, als Alternative zur T-SUN App und dem Web-UI.
-* [Login & Logout](### Login & Logout)
+* [Login & Logout](#Login-&-Logout)
 
 ## Getting Started
 
