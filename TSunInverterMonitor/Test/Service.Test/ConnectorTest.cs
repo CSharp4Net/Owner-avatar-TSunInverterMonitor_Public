@@ -111,7 +111,7 @@ namespace NZZ.TSIM.Service.Test
                 if (!loginResult.Successful)
                     Assert.IsTrue(loginResult.Successful, loginResult.ErrorMessage);
 
-                List<string> guids = new List<string> { "guid of your station" }; // add your statioin guid(s) here
+                List<string> guids = new List<string> { "guid of your station" }; // add your station guid(s) here
 
                 var aggregationOfDay = connection.GetStationAggregationOfDay(guids, DateTime.Today).Result;
                 var aggregationOfMonth = connection.GetStationAggregationOfMonth(guids, 2023, 7).Result;
