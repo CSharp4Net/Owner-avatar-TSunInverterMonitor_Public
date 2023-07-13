@@ -1,5 +1,6 @@
 using NZZ.TSIM.Contracts;
 using NZZ.TSIM.Contracts.Models;
+using System.Text.Json;
 
 namespace NZZ.TSIM.Service.Test
 {
@@ -13,11 +14,7 @@ namespace NZZ.TSIM.Service.Test
             {
                 IConnection connection = new Connection();
 
-                LoginCredentials credentials = new LoginCredentials
-                {
-                    UserName = "your account name",
-                    Password = "your password"
-                };
+                LoginCredentials credentials = LoadCredentials();
 
                 var loginResult = connection.Login(credentials).Result;
 
@@ -38,11 +35,7 @@ namespace NZZ.TSIM.Service.Test
             {
                 IConnection connection = new Connection();
 
-                LoginCredentials credentials = new LoginCredentials
-                {
-                    UserName = "your account name",
-                    Password = "your password"
-                };
+                LoginCredentials credentials = LoadCredentials();
 
                 var loginResult = connection.Login(credentials).Result;
 
@@ -68,20 +61,16 @@ namespace NZZ.TSIM.Service.Test
             {
                 IConnection connection = new Connection();
 
-                LoginCredentials credentials = new LoginCredentials
-                {
-                    UserName = "your account name",
-                    Password = "your password"
-                };
+                LoginCredentials credentials = LoadCredentials();
 
                 var loginResult = connection.Login(credentials).Result;
 
                 if (!loginResult.Successful)
                     Assert.IsTrue(loginResult.Successful, loginResult.ErrorMessage);
 
-                int stationId = 123456790; // set your station id here
+                var stations = connection.GetStations().Result!;
 
-                var stationDetails = connection.GetStationDetails(stationId).Result;
+                var stationDetails = connection.GetStationDetails(stations[0].Id).Result;
 
                 Assert.IsNotNull(stationDetails, loginResult.ErrorMessage);
 
@@ -100,18 +89,16 @@ namespace NZZ.TSIM.Service.Test
             {
                 IConnection connection = new Connection();
 
-                LoginCredentials credentials = new LoginCredentials
-                {
-                     UserName = "your account name",
-                     Password = "your password"
-                };
+                LoginCredentials credentials = LoadCredentials();
 
                 var loginResult = connection.Login(credentials).Result;
 
                 if (!loginResult.Successful)
                     Assert.IsTrue(loginResult.Successful, loginResult.ErrorMessage);
 
-                List<string> guids = new List<string> { "guid of your station" }; // add your station guid(s) here
+                var stations = connection.GetStations().Result!;
+
+                List<string> guids = new List<string> { stations[0].Guid };
 
                 var aggregationOfDay = connection.GetStationAggregationOfDay(guids, DateTime.Today).Result;
                 var aggregationOfMonth = connection.GetStationAggregationOfMonth(guids, 2023, 7).Result;
@@ -127,6 +114,20 @@ namespace NZZ.TSIM.Service.Test
             {
                 Assert.Fail(ex.ToString());
             }
+        }
+
+        private LoginCredentials LoadCredentials()
+        {
+            // Implement your own way to get credentials, e.g. hard coded
+            //return new LoginCredentials
+            //{
+            //     UserName = "your account name",
+            //     Password = "your password"
+            //};
+
+            string fileContent = File.ReadAllText("F:\\Projects\\TSUN-Credentials.txt");
+
+            return JsonSerializer.Deserialize<LoginCredentials>(fileContent);
         }
     }
 }

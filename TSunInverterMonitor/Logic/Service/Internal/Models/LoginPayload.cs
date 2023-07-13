@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace NZZ.TSIM.Service.Models
+namespace NZZ.TSIM.Service.Internal.Models
 {
-    public sealed class LoginPayload
+    internal sealed class LoginPayload
     {
         [JsonPropertyName("username")]
         public string UserName { get; set; } = "";

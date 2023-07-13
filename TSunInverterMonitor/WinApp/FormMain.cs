@@ -1,4 +1,5 @@
 ﻿using NZZ.TSIM.Contracts.Models;
+using NZZ.TSIM.WinApp.Statics;
 
 namespace NZZ.TSIM.WinApp
 {
@@ -9,20 +10,32 @@ namespace NZZ.TSIM.WinApp
             InitializeComponent();
         }
 
-        private LoginCredentials loginCredentials;
+        private LoginCredentials LoginCredentials { get; set; }
+        private ServiceSettings ServiceSettings { get; set; }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
 
-            loginCredentials = new LoginCredentials
+            try
             {
-                UserName = Properties.Settings.Default.ServiceUserName,
-                Password = Properties.Settings.Default.ServicePassword,
-            };
+                LoginCredentials = new LoginCredentials
+                {
+                    UserName = Properties.Settings.Default.LastUserName,
+                    Password = Properties.Settings.Default.LastPassword
+                };
 
-            if (string.IsNullOrEmpty(loginCredentials.UserName))
-                new FormSettings().ShowDialog(this);
+                ServiceSettings = ConfigFile.LoadSettings();
+            }
+            catch (Exception ex)
+            {
+                Program.HandleException(ex);
+            }
+        }
+
+        private void BtnOpenSettings_Click(object sender, EventArgs e)
+        {
+            new FormSettings(ServiceSettings).ShowDialog(this);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace NZZ.TSIM.Service.Models
+namespace NZZ.TSIM.Service.Internal.Models
 {
     internal class BasicResponse
     {

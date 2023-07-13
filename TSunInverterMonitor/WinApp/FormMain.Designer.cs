@@ -31,7 +31,9 @@
             progressBar1 = new ProgressBar();
             panel1 = new Panel();
             panel2 = new Panel();
+            BtnOpenSettings = new Button();
             panel1.SuspendLayout();
+            panel2.SuspendLayout();
             SuspendLayout();
             // 
             // progressBar1
@@ -42,7 +44,6 @@
             progressBar1.Size = new Size(760, 30);
             progressBar1.Style = ProgressBarStyle.Marquee;
             progressBar1.TabIndex = 0;
-            progressBar1.Value = 40;
             // 
             // panel1
             // 
@@ -55,10 +56,23 @@
             // 
             // panel2
             // 
-            panel2.Location = new Point(281, 254);
+            panel2.Controls.Add(BtnOpenSettings);
+            panel2.Dock = DockStyle.Top;
+            panel2.Location = new Point(0, 0);
             panel2.Name = "panel2";
-            panel2.Size = new Size(200, 100);
+            panel2.Size = new Size(784, 50);
             panel2.TabIndex = 2;
+            // 
+            // BtnOpenSettings
+            // 
+            BtnOpenSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BtnOpenSettings.Location = new Point(672, 12);
+            BtnOpenSettings.Name = "BtnOpenSettings";
+            BtnOpenSettings.Size = new Size(100, 30);
+            BtnOpenSettings.TabIndex = 0;
+            BtnOpenSettings.Text = "Einstellungen";
+            BtnOpenSettings.UseVisualStyleBackColor = true;
+            BtnOpenSettings.Click += BtnOpenSettings_Click;
             // 
             // FormMain
             // 
@@ -71,6 +85,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "TSunInverterMonitor - WinApp";
             panel1.ResumeLayout(false);
+            panel2.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -79,5 +94,6 @@
         private ProgressBar progressBar1;
         private Panel panel1;
         private Panel panel2;
+        private Button BtnOpenSettings;
     }
 }

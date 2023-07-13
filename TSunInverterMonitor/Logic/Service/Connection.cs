@@ -1,6 +1,6 @@
 ﻿using NZZ.TSIM.Contracts;
 using NZZ.TSIM.Contracts.Models;
-using NZZ.TSIM.Service.Models;
+using NZZ.TSIM.Service.Internal.Models;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;

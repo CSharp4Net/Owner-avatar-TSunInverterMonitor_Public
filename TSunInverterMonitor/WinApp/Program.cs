@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace NZZ.TSIM.WinApp
 {
     internal static class Program
@@ -12,6 +14,11 @@ namespace NZZ.TSIM.WinApp
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new FormMain());
+        }
+
+        internal static void HandleException(Exception ex, [CallerMemberName] string sender = "")
+        {
+            MessageBox.Show(ex.ToString(), $"Ausnahme in {sender}", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

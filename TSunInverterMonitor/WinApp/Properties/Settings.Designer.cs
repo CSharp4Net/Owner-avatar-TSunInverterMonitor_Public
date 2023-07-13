@@ -26,24 +26,24 @@ namespace NZZ.TSIM.WinApp.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ServiceUserName {
+        public string LastUserName {
             get {
-                return ((string)(this["ServiceUserName"]));
+                return ((string)(this["LastUserName"]));
             }
             set {
-                this["ServiceUserName"] = value;
+                this["LastUserName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ServicePassword {
+        public string LastPassword {
             get {
-                return ((string)(this["ServicePassword"]));
+                return ((string)(this["LastPassword"]));
             }
             set {
-                this["ServicePassword"] = value;
+                this["LastPassword"] = value;
             }
         }
     }
