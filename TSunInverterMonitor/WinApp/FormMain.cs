@@ -1,8 +1,12 @@
 ﻿using NZZ.TSIM.Contracts.Models;
 using NZZ.TSIM.Service;
+using NZZ.TSIM.WinApp.Internal.Models;
 using NZZ.TSIM.WinApp.Statics;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows.Forms.DataVisualization.Charting;
+using static System.Collections.Specialized.BitVector32;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace NZZ.TSIM.WinApp
 {
@@ -10,15 +14,24 @@ namespace NZZ.TSIM.WinApp
   {
     public FormMain()
     {
+      HistoryTypes = new ObservableCollection<HistoryType>(new List<HistoryType>()
+      {
+        new HistoryType{ Key = "day", Text = "Tag" },
+        new HistoryType{ Key = "month", Text = "Monat" },
+        new HistoryType{ Key = "year", Text = "Jahr" }
+      });
+
       InitializeComponent();
     }
 
     private ServiceSettings ServiceSettings { get; set; }
-    private Connection ServiceConnection { get; set; } = new Connection();
+    private Connection ServiceConnection { get; set; }
 
     private ObservableCollection<Station>? Stations { get; set; }
-
     private Station? SelectedStation => (Station)CbStations.SelectedItem;
+
+    private ObservableCollection<HistoryType> HistoryTypes { get; set; }
+    private HistoryType? SelectedHistoryType => (HistoryType)CbHistoryType.SelectedItem;
 
     private bool _isBusy = false;
     private bool IsBusy
@@ -59,10 +72,30 @@ namespace NZZ.TSIM.WinApp
       LbStationActivePower.Text = details.ActivePowerNamed;
       LbStationTodayPeakPower.Text = details.TodayPeakPowerNamed;
 
-      LbStationCurrentDayEnergy.Text = details.ActivePowerNamed;
+      LbStationCurrentDayEnergy.Text = details.CurrentDayEnergyNamed;
       LbStationCurrentMonthEnergy.Text = details.CurrentMonthEnergyNamed;
       LbStationCurrentYearEnergy.Text = details.CurrentYearEnergyNamed;
       LbStationTotalEnergy.Text = details.TotalEnergyNamed;
+
+      CbHistoryType.DataSource = HistoryTypes;
+    }
+
+    private async Task LoadStationHistoryOfDay(string stationGuid, DateTime date)
+    {
+      LbLog.Items.Add($"Clear history...");
+      Series series = ChHistory.Series[0];
+      series.Points.Clear();
+
+      LbLog.Items.Add($"Load history for day '{date.ToString("yyyy-MM-dd")}' ...");
+      StationAggregationDay? aggregationDay = await Task.Run(() => ServiceConnection.GetStationAggregationOfDay(stationGuid, date));
+
+      if (aggregationDay == null)
+      {
+        LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+        return;
+      }
+
+      // TODO
     }
 
     protected override void OnShown(EventArgs e)
@@ -71,12 +104,13 @@ namespace NZZ.TSIM.WinApp
 
       try
       {
+        ServiceSettings = ConfigFile.LoadSettings();
+        ServiceConnection = new Connection(ServiceSettings);
+
         TbServiceUserName.Text = Properties.Settings.Default.LastUserName;
 
         if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.LastPassword))
           TbServicePassword.Text = Encoding.UTF8.GetString(Convert.FromBase64String(Properties.Settings.Default.LastPassword));
-
-        ServiceSettings = ConfigFile.LoadSettings();
       }
       catch (Exception ex)
       {
@@ -87,6 +121,7 @@ namespace NZZ.TSIM.WinApp
     private void BtnOpenSettings_Click(object sender, EventArgs e)
     {
       new FormSettings(ServiceSettings).ShowDialog(this);
+      ServiceConnection.Reset(ServiceSettings);
     }
 
     private async void BtnConnect_Click(object sender, EventArgs e)
@@ -207,6 +242,8 @@ namespace NZZ.TSIM.WinApp
         if (SelectedStation == null)
           return;
 
+        IsBusy = true;
+
         Station station = SelectedStation;
         LbLog.Items.Add($"Load details of station '{station.Name}'...");
         StationDetails? details = await Task.Run(() => ServiceConnection.GetStationDetails(station.Id));
@@ -220,10 +257,47 @@ namespace NZZ.TSIM.WinApp
         LbLog.Items.Add($"Details of station {station.Id} loaded!");
         SetStationDetails(details);
       }
-      catch (Exception)
+      catch (Exception ex)
       {
+        Program.HandleException(ex);
+      }
+      finally
+      {
+        IsBusy = false;
+      }
+    }
 
-        throw;
+    private async void HistoryControl_ValueChanged(object sender, EventArgs e)
+    {
+      try
+      {
+        IsBusy = true;
+
+        if (SelectedStation == null || SelectedHistoryType == null)
+          return;
+
+        Station station = SelectedStation;
+        DateTime historyDate = DpHistoryDate.Value;
+        switch (SelectedHistoryType.Key)
+        {
+          case "day":
+            //await LoadStationHistoryOfDay(SelectedStation.Guid, DpHistoryDate.Value);
+            break;
+          case "month":
+            //await LoadStationHistoryOfMonth(SelectedStation.Guid, DpHistoryDate.Value);
+            break;
+          case "year":
+            //await LoadStationHistoryOfYear(SelectedStation.Guid, DpHistoryDate.Value);
+            break;
+        }
+      }
+      catch (Exception ex)
+      {
+        Program.HandleException(ex);
+      }
+      finally
+      {
+        IsBusy = false;
       }
     }
   }

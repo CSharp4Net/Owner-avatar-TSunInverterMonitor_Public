@@ -28,6 +28,8 @@
     /// </summary>
     private void InitializeComponent()
     {
+      System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+      System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
       PnFooter = new Panel();
       LbLog = new ListBox();
       PnHeader = new Panel();
@@ -63,6 +65,9 @@
       label6 = new Label();
       LbStationGuid = new Label();
       tabPage4 = new TabPage();
+      DpHistoryDate = new DateTimePicker();
+      label15 = new Label();
+      ChHistory = new System.Windows.Forms.DataVisualization.Charting.Chart();
       CbHistoryType = new ComboBox();
       label3 = new Label();
       BtnDisconnect = new Button();
@@ -77,6 +82,7 @@
       groupBox2.SuspendLayout();
       groupBox1.SuspendLayout();
       tabPage4.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)ChHistory).BeginInit();
       SuspendLayout();
       // 
       // PnFooter
@@ -448,6 +454,9 @@
       // 
       // tabPage4
       // 
+      tabPage4.Controls.Add(DpHistoryDate);
+      tabPage4.Controls.Add(label15);
+      tabPage4.Controls.Add(ChHistory);
       tabPage4.Controls.Add(CbHistoryType);
       tabPage4.Controls.Add(label3);
       tabPage4.Location = new Point(4, 24);
@@ -458,20 +467,57 @@
       tabPage4.Text = "Historie";
       tabPage4.UseVisualStyleBackColor = true;
       // 
+      // DpHistoryDate
+      // 
+      DpHistoryDate.Format = DateTimePickerFormat.Short;
+      DpHistoryDate.Location = new Point(55, 9);
+      DpHistoryDate.MinDate = new DateTime(2000, 1, 1, 0, 0, 0, 0);
+      DpHistoryDate.Name = "DpHistoryDate";
+      DpHistoryDate.Size = new Size(94, 23);
+      DpHistoryDate.TabIndex = 4;
+      DpHistoryDate.ValueChanged += HistoryControl_ValueChanged;
+      // 
+      // label15
+      // 
+      label15.AutoSize = true;
+      label15.Location = new Point(6, 12);
+      label15.Name = "label15";
+      label15.Size = new Size(43, 15);
+      label15.TabIndex = 3;
+      label15.Text = "Datum";
+      // 
+      // ChHistory
+      // 
+      ChHistory.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      chartArea1.Name = "ChartArea1";
+      ChHistory.ChartAreas.Add(chartArea1);
+      ChHistory.Location = new Point(6, 35);
+      ChHistory.Name = "ChHistory";
+      series1.BorderColor = Color.FromArgb(255, 128, 0);
+      series1.ChartArea = "ChartArea1";
+      series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+      series1.Color = Color.Goldenrod;
+      series1.Name = "Series1";
+      series1.YValuesPerPoint = 2;
+      ChHistory.Series.Add(series1);
+      ChHistory.Size = new Size(758, 294);
+      ChHistory.TabIndex = 2;
+      ChHistory.Text = "chart1";
+      // 
       // CbHistoryType
       // 
       CbHistoryType.DropDownStyle = ComboBoxStyle.DropDownList;
       CbHistoryType.FormattingEnabled = true;
-      CbHistoryType.Items.AddRange(new object[] { "Tag", "Monat", "Jahr" });
-      CbHistoryType.Location = new Point(59, 6);
+      CbHistoryType.Location = new Point(290, 9);
       CbHistoryType.Name = "CbHistoryType";
       CbHistoryType.Size = new Size(121, 23);
       CbHistoryType.TabIndex = 1;
+      CbHistoryType.SelectedIndexChanged += HistoryControl_ValueChanged;
       // 
       // label3
       // 
       label3.AutoSize = true;
-      label3.Location = new Point(6, 9);
+      label3.Location = new Point(237, 12);
       label3.Name = "label3";
       label3.Size = new Size(47, 15);
       label3.TabIndex = 0;
@@ -544,6 +590,7 @@
       groupBox1.PerformLayout();
       tabPage4.ResumeLayout(false);
       tabPage4.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)ChHistory).EndInit();
       ResumeLayout(false);
     }
 
@@ -589,5 +636,8 @@
     private Label LbStationTodayPeakPower;
     private Label LbStationTimeStamp;
     private Label label14;
+    private System.Windows.Forms.DataVisualization.Charting.Chart ChHistory;
+    private DateTimePicker DpHistoryDate;
+    private Label label15;
   }
 }

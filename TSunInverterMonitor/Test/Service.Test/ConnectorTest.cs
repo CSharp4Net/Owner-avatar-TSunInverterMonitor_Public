@@ -12,7 +12,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection();
+                IConnection connection = new Connection(new ServiceSettings());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -33,7 +33,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection();
+                IConnection connection = new Connection(new ServiceSettings());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -59,7 +59,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection();
+                IConnection connection = new Connection(new ServiceSettings());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -87,7 +87,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection();
+                IConnection connection = new Connection(new ServiceSettings());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -127,7 +127,7 @@ namespace NZZ.TSIM.Service.Test
 
             string fileContent = File.ReadAllText("F:\\Projects\\TSUN-Credentials.txt");
 
-            return JsonSerializer.Deserialize<LoginCredentials>(fileContent);
+            return JsonSerializer.Deserialize<LoginCredentials>(fileContent)!;
         }
     }
 }

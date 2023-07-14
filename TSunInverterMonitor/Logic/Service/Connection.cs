@@ -1,6 +1,7 @@
 ﻿using NZZ.TSIM.Contracts;
 using NZZ.TSIM.Contracts.Models;
 using NZZ.TSIM.Service.Internal.Models;
+using System;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -9,23 +10,31 @@ namespace NZZ.TSIM.Service
 {
   public sealed class Connection : IConnection
   {
-    public Connection()
+    public Connection(ServiceSettings settings)
     {
-      client = new HttpClient();
-      client.BaseAddress = new Uri("https://www.talent-monitoring.com");
+      Reset(settings);
     }
 
     private HttpClient client;
+    private ServiceSettings settings;
 
     public bool Connected { get; private set; }
 
-    public async Task<LoginResult> Login(LoginCredentials credentials)
+    public void Reset(ServiceSettings settings)
     {
-      Connected = false;
+      this.settings = settings;
+
+      client = new HttpClient();
+      client.BaseAddress = new Uri(settings.RootUrl);
       client.DefaultRequestHeaders.Authorization = null;
 
+      Connected = false;
+    }
+
+    public async Task<LoginResult> Login(LoginCredentials credentials)
+    {
       // CaptchaImage abfrage, die Antwort enthält eine UUID für die Anmeldung
-      HttpResponseMessage message = await client.GetAsync("prod-api/captchaImage");
+      HttpResponseMessage message = await client.GetAsync($"{settings.ApiPattern}/captchaImage");
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return new LoginResult
@@ -45,7 +54,7 @@ namespace NZZ.TSIM.Service
 
       JsonContent jsonContent = JsonContent.Create(payload, typeof(LoginPayload));
       // Anmeldung mit UUID und Credentials durchführen
-      message = await client.PostAsync("prod-api/login", jsonContent);
+      message = await client.PostAsync($"{settings.ApiPattern}/login", jsonContent);
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return new LoginResult
@@ -80,7 +89,7 @@ namespace NZZ.TSIM.Service
         return true;
 
       // Abmeldung mit Token senden
-      HttpResponseMessage message = await client.GetAsync("prod-api/logout");
+      HttpResponseMessage message = await client.GetAsync($"{settings.ApiPattern}/logout");
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return false;
@@ -96,7 +105,7 @@ namespace NZZ.TSIM.Service
 
     public async Task<List<Station>?> GetStations()
     {
-      HttpResponseMessage message = await client.GetAsync("prod-api/system/station/listWithoutPagingForMap");
+      HttpResponseMessage message = await client.GetAsync($"{settings.ApiPattern}/system/station/listWithoutPagingForMap");
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return null;
@@ -108,7 +117,7 @@ namespace NZZ.TSIM.Service
 
     public async Task<StationDetails?> GetStationDetails(int stationId)
     {
-      HttpResponseMessage message = await client.GetAsync($"prod-api/system/station/{stationId}");
+      HttpResponseMessage message = await client.GetAsync($"{settings.ApiPattern}/system/station/{stationId}");
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return null;
@@ -118,6 +127,8 @@ namespace NZZ.TSIM.Service
       return response.Details;
     }
 
+    public async Task<StationAggregationDay?> GetStationAggregationOfDay(string guid, DateTime date)
+      => await GetStationAggregationOfDay(new List<string>() { guid }, date);
     public async Task<StationAggregationDay?> GetStationAggregationOfDay(List<string> guids, DateTime date)
     {
       StationAggregationPayload payload = new StationAggregationPayload
@@ -130,7 +141,7 @@ namespace NZZ.TSIM.Service
 
       JsonContent jsonContent = JsonContent.Create(payload, typeof(StationAggregationPayload));
       // Anmeldung mit UUID und Credentials durchführen
-      HttpResponseMessage message = await client.PostAsync("prod-api/system/station/getStationAggregationReporterData", jsonContent);
+      HttpResponseMessage message = await client.PostAsync($"{settings.ApiPattern}/system/station/getStationAggregationReporterData", jsonContent);
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return null;
@@ -140,6 +151,8 @@ namespace NZZ.TSIM.Service
       return response.Data.FirstOrDefault();
     }
 
+    public async Task<StationAggregationMonth?> GetStationAggregationOfMonth(string guid, int year, int month)
+      => await GetStationAggregationOfMonth(new List<string>() { guid }, year, month);
     public async Task<StationAggregationMonth?> GetStationAggregationOfMonth(List<string> guids, int year, int month)
     {
       StationAggregationPayload payload = new StationAggregationPayload
@@ -152,7 +165,7 @@ namespace NZZ.TSIM.Service
 
       JsonContent jsonContent = JsonContent.Create(payload, typeof(StationAggregationPayload));
       // Anmeldung mit UUID und Credentials durchführen
-      HttpResponseMessage message = await client.PostAsync("prod-api/system/station/getStationAggregationReporterData", jsonContent);
+      HttpResponseMessage message = await client.PostAsync($"{settings.ApiPattern}/system/station/getStationAggregationReporterData", jsonContent);
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return null;
@@ -162,6 +175,8 @@ namespace NZZ.TSIM.Service
       return response.Data.FirstOrDefault();
     }
 
+    public async Task<StationAggregationYear?> GetStationAggregationOfYear(string guid, int year)
+      => await GetStationAggregationOfYear(new List<string>() { guid }, year);
     public async Task<StationAggregationYear?> GetStationAggregationOfYear(List<string> guids, int year)
     {
       StationAggregationPayload payload = new StationAggregationPayload
@@ -174,7 +189,7 @@ namespace NZZ.TSIM.Service
 
       JsonContent jsonContent = JsonContent.Create(payload, typeof(StationAggregationPayload));
       // Anmeldung mit UUID und Credentials durchführen
-      HttpResponseMessage message = await client.PostAsync("prod-api/system/station/getStationAggregationReporterData", jsonContent);
+      HttpResponseMessage message = await client.PostAsync($"{settings.ApiPattern}/system/station/getStationAggregationReporterData", jsonContent);
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return null;
