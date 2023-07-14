@@ -15,7 +15,10 @@ namespace NZZ.TSIM.WinApp
 
     private ServiceSettings ServiceSettings { get; set; }
     private Connection ServiceConnection { get; set; } = new Connection();
+
     private ObservableCollection<Station>? Stations { get; set; }
+
+    private Station? SelectedStation => (Station)CbStations.SelectedItem;
 
     private bool _isBusy = false;
     private bool IsBusy
@@ -44,6 +47,22 @@ namespace NZZ.TSIM.WinApp
 
         this.Text = string.Format(Tag.ToString()!, "Nicht verbunden");
       }
+    }
+
+    private void SetStationDetails(StationDetails details)
+    {
+      LbStationId.Text = details.Id.ToString();
+      LbStationGuid.Text = details.Guid;
+      LbStationAddress.Text = details.Location;
+
+      LbStationTimeStamp.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+      LbStationActivePower.Text = details.ActivePowerNamed;
+      LbStationTodayPeakPower.Text = details.TodayPeakPowerNamed;
+
+      LbStationCurrentDayEnergy.Text = details.ActivePowerNamed;
+      LbStationCurrentMonthEnergy.Text = details.CurrentMonthEnergyNamed;
+      LbStationCurrentYearEnergy.Text = details.CurrentYearEnergyNamed;
+      LbStationTotalEnergy.Text = details.TotalEnergyNamed;
     }
 
     protected override void OnShown(EventArgs e)
@@ -148,7 +167,7 @@ namespace NZZ.TSIM.WinApp
 
         if (stations == null)
         {
-          LbLog.Items.Add($"Get stations failed, please try again with [Refresh]!");
+          LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
           return;
         }
 
@@ -178,6 +197,33 @@ namespace NZZ.TSIM.WinApp
       catch (Exception ex)
       {
         Program.HandleException(ex);
+      }
+    }
+
+    private async void CbStations_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      try
+      {
+        if (SelectedStation == null)
+          return;
+
+        Station station = SelectedStation;
+        LbLog.Items.Add($"Load details of station '{station.Name}'...");
+        StationDetails? details = await Task.Run(() => ServiceConnection.GetStationDetails(station.Id));
+
+        if (details == null)
+        {
+          LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+          return;
+        }
+
+        LbLog.Items.Add($"Details of station {station.Id} loaded!");
+        SetStationDetails(details);
+      }
+      catch (Exception)
+      {
+
+        throw;
       }
     }
   }
