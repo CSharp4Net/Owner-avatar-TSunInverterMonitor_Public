@@ -3,6 +3,6 @@
     public sealed class AggregationDataLogSettings
     {
         public bool Enabled { get; set; }
-        public bool FolderPath { get; set; }
+        public string FolderPath { get; set; } = "";
     }
 }
