@@ -128,37 +128,48 @@ namespace NZZ.TSIM.Service
     }
 
     public async Task<StationAggregationDay?> GetStationAggregationOfDay(string guid, DateTime date)
-      => await GetStationAggregationOfDay(new List<string>() { guid }, date);
-    public async Task<StationAggregationDay?> GetStationAggregationOfDay(List<string> guids, DateTime date)
     {
       StationAggregationPayload payload = new StationAggregationPayload
       {
         BusinessType = "1",
-        PowerStationGuids = string.Join(",", guids),
+        PowerStationGuids = guid,
         Mode = "day",
         Date = date.ToString("yyyy-MM-dd")
       };
 
+      // Tages-Total abrufen
       JsonContent jsonContent = JsonContent.Create(payload, typeof(StationAggregationPayload));
-      // Anmeldung mit UUID und Credentials durchführen
       HttpResponseMessage message = await client.PostAsync($"{settings.ApiPattern}/system/station/getStationAggregationReporterData", jsonContent);
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
         return null;
 
-      var response = await HttpContentToObject<StationAggregationResponse<StationAggregationDay>>(message.Content)!;
+      var dayResponse = await HttpContentToObject<StationAggregationResponse<StationAggregationDay>>(message.Content)!;
 
-      return response.Data.FirstOrDefault();
+      StationAggregationDay? result = dayResponse.Data.FirstOrDefault();
+
+      if (result == null)
+        return null;
+
+      // Tages-Einzelwerte abrufen
+      message = await client.GetAsync($"{settings.ApiPattern}/system/station/getStationAggregationChartData?powerStationGuid={guid}&group=hour&date={date.ToString("yyyy-MM-dd")}&series=total_peak_power%2Cday_energy%2Cincoming");
+
+      if (message.StatusCode != System.Net.HttpStatusCode.OK)
+        return null;
+
+      var peaksResponse = await HttpContentToObject<StationAggregationPeaksResponse<StationAggregationDayPeaks>>(message.Content)!;
+
+      result.Peaks = peaksResponse.Data!;
+
+      return result;
     }
 
     public async Task<StationAggregationMonth?> GetStationAggregationOfMonth(string guid, int year, int month)
-      => await GetStationAggregationOfMonth(new List<string>() { guid }, year, month);
-    public async Task<StationAggregationMonth?> GetStationAggregationOfMonth(List<string> guids, int year, int month)
     {
       StationAggregationPayload payload = new StationAggregationPayload
       {
         BusinessType = "1",
-        PowerStationGuids = string.Join(",", guids),
+        PowerStationGuids = guid,
         Mode = "month",
         Date = $"{year}-{month:00}"
       };
@@ -176,13 +187,11 @@ namespace NZZ.TSIM.Service
     }
 
     public async Task<StationAggregationYear?> GetStationAggregationOfYear(string guid, int year)
-      => await GetStationAggregationOfYear(new List<string>() { guid }, year);
-    public async Task<StationAggregationYear?> GetStationAggregationOfYear(List<string> guids, int year)
     {
       StationAggregationPayload payload = new StationAggregationPayload
       {
         BusinessType = "1",
-        PowerStationGuids = string.Join(",", guids),
+        PowerStationGuids = guid,
         Mode = "year",
         Date = $"{year}"
       };

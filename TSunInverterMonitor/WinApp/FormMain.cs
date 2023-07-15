@@ -2,9 +2,15 @@
 using NZZ.TSIM.Service;
 using NZZ.TSIM.WinApp.Internal.Models;
 using NZZ.TSIM.WinApp.Statics;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 using System.Text;
+using System.Text.Json;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Xml.Linq;
 using static System.Collections.Specialized.BitVector32;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
@@ -82,9 +88,9 @@ namespace NZZ.TSIM.WinApp
 
     private async Task LoadStationHistoryOfDay(string stationGuid, DateTime date)
     {
-      LbLog.Items.Add($"Clear history...");
-      Series series = ChHistory.Series[0];
-      series.Points.Clear();
+      //LbLog.Items.Add($"Clear history...");
+      //Series series = ChHistory.Series[0];
+      //series.Points.Clear();
 
       LbLog.Items.Add($"Load history for day '{date.ToString("yyyy-MM-dd")}' ...");
       StationAggregationDay? aggregationDay = await Task.Run(() => ServiceConnection.GetStationAggregationOfDay(stationGuid, date));
@@ -95,7 +101,7 @@ namespace NZZ.TSIM.WinApp
         return;
       }
 
-      // TODO
+      LbHistoryTotal.Text = aggregationDay.TotalEnergy;
     }
 
     protected override void OnShown(EventArgs e)
@@ -281,7 +287,7 @@ namespace NZZ.TSIM.WinApp
         switch (SelectedHistoryType.Key)
         {
           case "day":
-            //await LoadStationHistoryOfDay(SelectedStation.Guid, DpHistoryDate.Value);
+            await LoadStationHistoryOfDay(SelectedStation.Guid, DpHistoryDate.Value);
             break;
           case "month":
             //await LoadStationHistoryOfMonth(SelectedStation.Guid, DpHistoryDate.Value);
@@ -299,6 +305,77 @@ namespace NZZ.TSIM.WinApp
       {
         IsBusy = false;
       }
+    }
+
+    private void BtnDebug_Click(object sender, EventArgs e)
+    {
+      PnBody.Visible = true;
+
+      string fileContent = File.ReadAllText("F:\\Projects\\VS\\TSunInverterMonitor_Private\\TSunInverterMonitor\\Documentation\\T-SUN Day aggregation.txt");
+      var peaksData = JsonSerializer.Deserialize<StationAggregationDayPeaks>(fileContent);
+
+      ChHistory.ChartAreas.Clear();
+      ChHistory.Series.Clear();
+
+      ChartArea area = ChHistory.ChartAreas.Add("Default");
+
+      Axis axis = area.AxisX;
+      axis.IntervalType = DateTimeIntervalType.Hours;
+      //axis.Interval = 15;
+      axis.Title = "Zeit";
+      axis.TitleFont = new Font("Arial", 16);
+
+      axis = area.AxisY;
+      axis.Title = "Watt";
+      axis.TitleFont = new Font("Arial", 16);
+      //axis.TitleAlignment = StringAlignment.Far;
+
+      Series series = ChHistory.Series.Add("Default");
+      series.SetDefault(true);
+      series.Enabled = true;
+      series.ChartType = SeriesChartType.Area;
+      //series.Label = "Hallo Welt";
+
+      series.Points.Clear();
+
+      // Künstlicher Start bei 0
+      var point = new DataPoint { LegendText = "05:00" };
+      point.SetValueXY(new DateTime(2023, 07, 12, 5, 0, 0), 0);
+      series.Points.Add(point);
+      // Echtdaten
+      point = new DataPoint { AxisLabel = "05:15" };
+      point.SetValueXY(new DateTime(2023, 07, 12, 5, 15, 0), 35);
+      series.Points.Add(point);
+      point = new DataPoint { AxisLabel = "05:30" };
+      point.SetValueXY(new DateTime(2023, 07, 12, 5, 30, 0), 55);
+      series.Points.Add(point);
+      point = new DataPoint { AxisLabel = "05:45" };
+      point.SetValueXY(new DateTime(2023, 07, 12, 5, 45, 0), 125);
+      series.Points.Add(point);
+      point = new DataPoint { AxisLabel = "06:00" };
+      point.SetValueXY(new DateTime(2023, 07, 12, 6, 0, 0), 250);
+      series.Points.Add(point);
+      // Künstliches Ende bei 0
+      point = new DataPoint { AxisLabel = "06:15" };
+      point.SetValueXY(new DateTime(2023, 07, 12, 6, 15, 0), 0);
+      series.Points.Add(point);
+
+      //series.XValueType = ChartValueType.Time;
+      //foreach (var item in peaksData.ChartEntries)
+      //{
+      //  var point = new DataPoint();
+      //  //if (counter % 60 == 0)
+      //  //{
+      //  point.AxisLabel = item.PointOfTime.ToString(@"hh\:mm");
+      //  point.SetValueXY(item.PointOfTime, item.PeakPower); // item.PointOfTime.Hour * 60 + item.PointOfTime.Minute;
+      //  //point.SetValueY(item.PeakPower);
+      //  //}
+      //  //else
+      //  //{
+      //  //  point.AxisLabel = String.Empty;
+      //  //}
+      //  series.Points.Add(point);
+      //}
     }
   }
 }

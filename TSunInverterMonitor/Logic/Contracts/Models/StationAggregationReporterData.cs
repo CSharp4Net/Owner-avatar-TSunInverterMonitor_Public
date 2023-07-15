@@ -5,12 +5,12 @@ namespace NZZ.TSIM.Contracts.Models
     public class StationAggregationReporterData
     {
         [JsonPropertyName("date")]
-        public string date { get; set; } = "";
+        public string Date { get; set; } = "";
         [JsonPropertyName("stationName")]
-        public string stationName { get; set; } = "";
+        public string StationName { get; set; } = "";
         [JsonPropertyName("powerStationGuid")]
-        public string powerStationGuid { get; set; } = "";
+        public string PowerStationGuid { get; set; } = "";
         [JsonPropertyName("location")]
-        public string location { get; set; } = "";
+        public string Location { get; set; } = "";
     }
 }

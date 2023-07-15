@@ -28,11 +28,10 @@
     /// </summary>
     private void InitializeComponent()
     {
-      System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-      System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
       PnFooter = new Panel();
       LbLog = new ListBox();
       PnHeader = new Panel();
+      BtnDebug = new Button();
       TbServicePassword = new TextBox();
       label2 = new Label();
       TbServiceUserName = new TextBox();
@@ -65,15 +64,19 @@
       label6 = new Label();
       LbStationGuid = new Label();
       tabPage4 = new TabPage();
-      DpHistoryDate = new DateTimePicker();
-      label15 = new Label();
       ChHistory = new System.Windows.Forms.DataVisualization.Charting.Chart();
-      CbHistoryType = new ComboBox();
+      panel2 = new Panel();
+      DpHistoryDate = new DateTimePicker();
+      label16 = new Label();
       label3 = new Label();
+      LbHistoryTotal = new Label();
+      CbHistoryType = new ComboBox();
+      label15 = new Label();
+      panel1 = new Panel();
       BtnDisconnect = new Button();
+      label4 = new Label();
       BtnRefresh = new Button();
       CbStations = new ComboBox();
-      label4 = new Label();
       PnFooter.SuspendLayout();
       PnHeader.SuspendLayout();
       PnBody.SuspendLayout();
@@ -83,6 +86,8 @@
       groupBox1.SuspendLayout();
       tabPage4.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)ChHistory).BeginInit();
+      panel2.SuspendLayout();
+      panel1.SuspendLayout();
       SuspendLayout();
       // 
       // PnFooter
@@ -109,6 +114,7 @@
       // PnHeader
       // 
       PnHeader.BorderStyle = BorderStyle.FixedSingle;
+      PnHeader.Controls.Add(BtnDebug);
       PnHeader.Controls.Add(TbServicePassword);
       PnHeader.Controls.Add(label2);
       PnHeader.Controls.Add(TbServiceUserName);
@@ -120,6 +126,17 @@
       PnHeader.Name = "PnHeader";
       PnHeader.Size = new Size(784, 50);
       PnHeader.TabIndex = 2;
+      // 
+      // BtnDebug
+      // 
+      BtnDebug.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      BtnDebug.Location = new Point(459, 11);
+      BtnDebug.Name = "BtnDebug";
+      BtnDebug.Size = new Size(100, 30);
+      BtnDebug.TabIndex = 6;
+      BtnDebug.Text = "DEBUG";
+      BtnDebug.UseVisualStyleBackColor = true;
+      BtnDebug.Click += BtnDebug_Click;
       // 
       // TbServicePassword
       // 
@@ -181,10 +198,7 @@
       // PnBody
       // 
       PnBody.Controls.Add(tabControl1);
-      PnBody.Controls.Add(BtnDisconnect);
-      PnBody.Controls.Add(BtnRefresh);
-      PnBody.Controls.Add(CbStations);
-      PnBody.Controls.Add(label4);
+      PnBody.Controls.Add(panel1);
       PnBody.Dock = DockStyle.Fill;
       PnBody.Location = new Point(0, 50);
       PnBody.Name = "PnBody";
@@ -196,11 +210,12 @@
       // 
       tabControl1.Controls.Add(tabPage2);
       tabControl1.Controls.Add(tabPage4);
-      tabControl1.Location = new Point(3, 42);
+      tabControl1.Dock = DockStyle.Fill;
+      tabControl1.Location = new Point(0, 40);
       tabControl1.Name = "tabControl1";
       tabControl1.SelectedIndex = 0;
-      tabControl1.Size = new Size(778, 363);
-      tabControl1.TabIndex = 9;
+      tabControl1.Size = new Size(784, 371);
+      tabControl1.TabIndex = 10;
       // 
       // tabPage2
       // 
@@ -209,7 +224,7 @@
       tabPage2.Location = new Point(4, 24);
       tabPage2.Name = "tabPage2";
       tabPage2.Padding = new Padding(3);
-      tabPage2.Size = new Size(770, 335);
+      tabPage2.Size = new Size(776, 343);
       tabPage2.TabIndex = 1;
       tabPage2.Text = "Details";
       tabPage2.UseVisualStyleBackColor = true;
@@ -232,7 +247,7 @@
       groupBox2.Controls.Add(label8);
       groupBox2.Location = new Point(6, 82);
       groupBox2.Name = "groupBox2";
-      groupBox2.Size = new Size(758, 116);
+      groupBox2.Size = new Size(758, 171);
       groupBox2.TabIndex = 8;
       groupBox2.TabStop = false;
       groupBox2.Text = "Werte";
@@ -270,7 +285,7 @@
       // LbStationTotalEnergy
       // 
       LbStationTotalEnergy.AutoSize = true;
-      LbStationTotalEnergy.Location = new Point(572, 85);
+      LbStationTotalEnergy.Location = new Point(162, 148);
       LbStationTotalEnergy.Margin = new Padding(3);
       LbStationTotalEnergy.Name = "LbStationTotalEnergy";
       LbStationTotalEnergy.Size = new Size(16, 15);
@@ -279,7 +294,7 @@
       // 
       // label12
       // 
-      label12.Location = new Point(416, 85);
+      label12.Location = new Point(6, 148);
       label12.Margin = new Padding(3);
       label12.Name = "label12";
       label12.Size = new Size(150, 15);
@@ -299,7 +314,7 @@
       // 
       // label9
       // 
-      label9.Location = new Point(416, 64);
+      label9.Location = new Point(6, 127);
       label9.Margin = new Padding(3);
       label9.Name = "label9";
       label9.Size = new Size(150, 15);
@@ -320,7 +335,7 @@
       // LbStationCurrentYearEnergy
       // 
       LbStationCurrentYearEnergy.AutoSize = true;
-      LbStationCurrentYearEnergy.Location = new Point(572, 64);
+      LbStationCurrentYearEnergy.Location = new Point(162, 127);
       LbStationCurrentYearEnergy.Margin = new Padding(3);
       LbStationCurrentYearEnergy.Name = "LbStationCurrentYearEnergy";
       LbStationCurrentYearEnergy.Size = new Size(16, 15);
@@ -329,7 +344,7 @@
       // 
       // label13
       // 
-      label13.Location = new Point(416, 43);
+      label13.Location = new Point(6, 106);
       label13.Margin = new Padding(3);
       label13.Name = "label13";
       label13.Size = new Size(150, 15);
@@ -340,7 +355,7 @@
       // LbStationCurrentMonthEnergy
       // 
       LbStationCurrentMonthEnergy.AutoSize = true;
-      LbStationCurrentMonthEnergy.Location = new Point(572, 43);
+      LbStationCurrentMonthEnergy.Location = new Point(162, 106);
       LbStationCurrentMonthEnergy.Margin = new Padding(3);
       LbStationCurrentMonthEnergy.Name = "LbStationCurrentMonthEnergy";
       LbStationCurrentMonthEnergy.Size = new Size(16, 15);
@@ -349,7 +364,7 @@
       // 
       // label11
       // 
-      label11.Location = new Point(416, 22);
+      label11.Location = new Point(6, 85);
       label11.Margin = new Padding(3);
       label11.Name = "label11";
       label11.Size = new Size(150, 15);
@@ -360,7 +375,7 @@
       // LbStationCurrentDayEnergy
       // 
       LbStationCurrentDayEnergy.AutoSize = true;
-      LbStationCurrentDayEnergy.Location = new Point(572, 22);
+      LbStationCurrentDayEnergy.Location = new Point(162, 85);
       LbStationCurrentDayEnergy.Margin = new Padding(3);
       LbStationCurrentDayEnergy.Name = "LbStationCurrentDayEnergy";
       LbStationCurrentDayEnergy.Size = new Size(16, 15);
@@ -454,74 +469,110 @@
       // 
       // tabPage4
       // 
-      tabPage4.Controls.Add(DpHistoryDate);
-      tabPage4.Controls.Add(label15);
       tabPage4.Controls.Add(ChHistory);
-      tabPage4.Controls.Add(CbHistoryType);
-      tabPage4.Controls.Add(label3);
+      tabPage4.Controls.Add(panel2);
       tabPage4.Location = new Point(4, 24);
       tabPage4.Name = "tabPage4";
       tabPage4.Padding = new Padding(3);
-      tabPage4.Size = new Size(770, 335);
+      tabPage4.Size = new Size(776, 343);
       tabPage4.TabIndex = 3;
       tabPage4.Text = "Historie";
       tabPage4.UseVisualStyleBackColor = true;
       // 
+      // ChHistory
+      // 
+      ChHistory.Dock = DockStyle.Fill;
+      ChHistory.Location = new Point(3, 33);
+      ChHistory.Name = "ChHistory";
+      ChHistory.Size = new Size(770, 307);
+      ChHistory.TabIndex = 13;
+      ChHistory.Text = "chart1";
+      // 
+      // panel2
+      // 
+      panel2.Controls.Add(DpHistoryDate);
+      panel2.Controls.Add(label16);
+      panel2.Controls.Add(label3);
+      panel2.Controls.Add(LbHistoryTotal);
+      panel2.Controls.Add(CbHistoryType);
+      panel2.Controls.Add(label15);
+      panel2.Dock = DockStyle.Top;
+      panel2.Location = new Point(3, 3);
+      panel2.Name = "panel2";
+      panel2.Size = new Size(770, 30);
+      panel2.TabIndex = 12;
+      // 
       // DpHistoryDate
       // 
       DpHistoryDate.Format = DateTimePickerFormat.Short;
-      DpHistoryDate.Location = new Point(55, 9);
+      DpHistoryDate.Location = new Point(64, 3);
       DpHistoryDate.MinDate = new DateTime(2000, 1, 1, 0, 0, 0, 0);
       DpHistoryDate.Name = "DpHistoryDate";
       DpHistoryDate.Size = new Size(94, 23);
       DpHistoryDate.TabIndex = 4;
       DpHistoryDate.ValueChanged += HistoryControl_ValueChanged;
       // 
-      // label15
+      // label16
       // 
-      label15.AutoSize = true;
-      label15.Location = new Point(6, 12);
-      label15.Name = "label15";
-      label15.Size = new Size(43, 15);
-      label15.TabIndex = 3;
-      label15.Text = "Datum";
+      label16.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      label16.Location = new Point(559, 6);
+      label16.Margin = new Padding(3);
+      label16.Name = "label16";
+      label16.Size = new Size(100, 15);
+      label16.TabIndex = 11;
+      label16.Text = "Gesamt:";
+      label16.TextAlign = ContentAlignment.TopRight;
       // 
-      // ChHistory
+      // label3
       // 
-      ChHistory.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      chartArea1.Name = "ChartArea1";
-      ChHistory.ChartAreas.Add(chartArea1);
-      ChHistory.Location = new Point(6, 35);
-      ChHistory.Name = "ChHistory";
-      series1.BorderColor = Color.FromArgb(255, 128, 0);
-      series1.ChartArea = "ChartArea1";
-      series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-      series1.Color = Color.Goldenrod;
-      series1.Name = "Series1";
-      series1.YValuesPerPoint = 2;
-      ChHistory.Series.Add(series1);
-      ChHistory.Size = new Size(758, 294);
-      ChHistory.TabIndex = 2;
-      ChHistory.Text = "chart1";
+      label3.AutoSize = true;
+      label3.Location = new Point(246, 6);
+      label3.Name = "label3";
+      label3.Size = new Size(47, 15);
+      label3.TabIndex = 0;
+      label3.Text = "Ansicht";
+      // 
+      // LbHistoryTotal
+      // 
+      LbHistoryTotal.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      LbHistoryTotal.AutoSize = true;
+      LbHistoryTotal.Location = new Point(665, 6);
+      LbHistoryTotal.Margin = new Padding(3);
+      LbHistoryTotal.Name = "LbHistoryTotal";
+      LbHistoryTotal.Size = new Size(16, 15);
+      LbHistoryTotal.TabIndex = 10;
+      LbHistoryTotal.Text = "...";
       // 
       // CbHistoryType
       // 
       CbHistoryType.DropDownStyle = ComboBoxStyle.DropDownList;
       CbHistoryType.FormattingEnabled = true;
-      CbHistoryType.Location = new Point(290, 9);
+      CbHistoryType.Location = new Point(299, 3);
       CbHistoryType.Name = "CbHistoryType";
       CbHistoryType.Size = new Size(121, 23);
       CbHistoryType.TabIndex = 1;
       CbHistoryType.SelectedIndexChanged += HistoryControl_ValueChanged;
       // 
-      // label3
+      // label15
       // 
-      label3.AutoSize = true;
-      label3.Location = new Point(237, 12);
-      label3.Name = "label3";
-      label3.Size = new Size(47, 15);
-      label3.TabIndex = 0;
-      label3.Text = "Ansicht";
+      label15.AutoSize = true;
+      label15.Location = new Point(15, 6);
+      label15.Name = "label15";
+      label15.Size = new Size(43, 15);
+      label15.TabIndex = 3;
+      label15.Text = "Datum";
+      // 
+      // panel1
+      // 
+      panel1.Controls.Add(BtnDisconnect);
+      panel1.Controls.Add(label4);
+      panel1.Controls.Add(BtnRefresh);
+      panel1.Controls.Add(CbStations);
+      panel1.Dock = DockStyle.Top;
+      panel1.Location = new Point(0, 0);
+      panel1.Name = "panel1";
+      panel1.Size = new Size(784, 40);
+      panel1.TabIndex = 9;
       // 
       // BtnDisconnect
       // 
@@ -533,6 +584,15 @@
       BtnDisconnect.Text = "Trennen";
       BtnDisconnect.UseVisualStyleBackColor = true;
       BtnDisconnect.Click += BtnDisconnect_Click;
+      // 
+      // label4
+      // 
+      label4.AutoSize = true;
+      label4.Location = new Point(13, 14);
+      label4.Name = "label4";
+      label4.Size = new Size(44, 15);
+      label4.TabIndex = 5;
+      label4.Text = "Station";
       // 
       // BtnRefresh
       // 
@@ -555,15 +615,6 @@
       CbStations.TabIndex = 7;
       CbStations.SelectedIndexChanged += CbStations_SelectedIndexChanged;
       // 
-      // label4
-      // 
-      label4.AutoSize = true;
-      label4.Location = new Point(13, 14);
-      label4.Name = "label4";
-      label4.Size = new Size(44, 15);
-      label4.TabIndex = 5;
-      label4.Text = "Station";
-      // 
       // FormMain
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -581,7 +632,6 @@
       PnHeader.ResumeLayout(false);
       PnHeader.PerformLayout();
       PnBody.ResumeLayout(false);
-      PnBody.PerformLayout();
       tabControl1.ResumeLayout(false);
       tabPage2.ResumeLayout(false);
       groupBox2.ResumeLayout(false);
@@ -589,8 +639,11 @@
       groupBox1.ResumeLayout(false);
       groupBox1.PerformLayout();
       tabPage4.ResumeLayout(false);
-      tabPage4.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)ChHistory).EndInit();
+      panel2.ResumeLayout(false);
+      panel2.PerformLayout();
+      panel1.ResumeLayout(false);
+      panel1.PerformLayout();
       ResumeLayout(false);
     }
 
@@ -609,35 +662,40 @@
     private Label label4;
     private Button BtnRefresh;
     private Button BtnDisconnect;
+    private Button BtnDebug;
     private TabControl tabControl1;
     private TabPage tabPage2;
-    private TabPage tabPage4;
-    private Label LbStationGuid;
-    private Label label6;
-    private Label LbStationId;
-    private Label label5;
-    private GroupBox groupBox1;
-    private Label LbStationAddress;
-    private Label label7;
-    private ComboBox CbHistoryType;
-    private Label label3;
     private GroupBox groupBox2;
+    private Label LbStationTimeStamp;
+    private Label label14;
+    private Label LbStationTodayPeakPower;
+    private Label LbStationTotalEnergy;
+    private Label label12;
+    private Label label10;
+    private Label label9;
+    private Label LbStationActivePower;
     private Label LbStationCurrentYearEnergy;
     private Label label13;
     private Label LbStationCurrentMonthEnergy;
     private Label label11;
     private Label LbStationCurrentDayEnergy;
     private Label label8;
-    private Label LbStationActivePower;
-    private Label label10;
-    private Label label9;
-    private Label LbStationTotalEnergy;
-    private Label label12;
-    private Label LbStationTodayPeakPower;
-    private Label LbStationTimeStamp;
-    private Label label14;
+    private GroupBox groupBox1;
+    private Label label5;
+    private Label LbStationAddress;
+    private Label LbStationId;
+    private Label label7;
+    private Label label6;
+    private Label LbStationGuid;
+    private TabPage tabPage4;
     private System.Windows.Forms.DataVisualization.Charting.Chart ChHistory;
+    private Panel panel2;
     private DateTimePicker DpHistoryDate;
+    private Label label16;
+    private Label label3;
+    private Label LbHistoryTotal;
+    private ComboBox CbHistoryType;
     private Label label15;
+    private Panel panel1;
   }
 }
