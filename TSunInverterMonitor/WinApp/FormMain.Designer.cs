@@ -28,6 +28,15 @@
     /// </summary>
     private void InitializeComponent()
     {
+      System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+      System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+      System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(45117.221678240741D, 0D);
+      System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(45117.232094907406D, "8,5");
+      System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint3 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(45117.242511574077D, "14,39");
+      System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint4 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(45117.252928240741D, "21,6");
+      System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint5 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(45117.263344907406D, "26,39");
+      System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint6 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(45117.273761574077D, "38,59");
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
       PnFooter = new Panel();
       LbLog = new ListBox();
       PnHeader = new Panel();
@@ -66,12 +75,13 @@
       tabPage4 = new TabPage();
       ChHistory = new System.Windows.Forms.DataVisualization.Charting.Chart();
       panel2 = new Panel();
+      BtnDayAfter = new Button();
+      BtnDayBefore = new Button();
       DpHistoryDate = new DateTimePicker();
       label16 = new Label();
       label3 = new Label();
       LbHistoryTotal = new Label();
       CbHistoryType = new ComboBox();
-      label15 = new Label();
       panel1 = new Panel();
       BtnDisconnect = new Button();
       label4 = new Label();
@@ -95,9 +105,9 @@
       PnFooter.BorderStyle = BorderStyle.FixedSingle;
       PnFooter.Controls.Add(LbLog);
       PnFooter.Dock = DockStyle.Bottom;
-      PnFooter.Location = new Point(0, 461);
+      PnFooter.Location = new Point(0, 661);
       PnFooter.Name = "PnFooter";
-      PnFooter.Size = new Size(784, 100);
+      PnFooter.Size = new Size(1184, 100);
       PnFooter.TabIndex = 1;
       // 
       // LbLog
@@ -108,7 +118,7 @@
       LbLog.Location = new Point(0, 0);
       LbLog.Name = "LbLog";
       LbLog.ScrollAlwaysVisible = true;
-      LbLog.Size = new Size(782, 98);
+      LbLog.Size = new Size(1182, 98);
       LbLog.TabIndex = 0;
       // 
       // PnHeader
@@ -124,13 +134,13 @@
       PnHeader.Dock = DockStyle.Top;
       PnHeader.Location = new Point(0, 0);
       PnHeader.Name = "PnHeader";
-      PnHeader.Size = new Size(784, 50);
+      PnHeader.Size = new Size(1184, 50);
       PnHeader.TabIndex = 2;
       // 
       // BtnDebug
       // 
       BtnDebug.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnDebug.Location = new Point(459, 11);
+      BtnDebug.Location = new Point(859, 11);
       BtnDebug.Name = "BtnDebug";
       BtnDebug.Size = new Size(100, 30);
       BtnDebug.TabIndex = 6;
@@ -176,7 +186,7 @@
       // BtnOpenSettings
       // 
       BtnOpenSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnOpenSettings.Location = new Point(671, 11);
+      BtnOpenSettings.Location = new Point(1071, 11);
       BtnOpenSettings.Name = "BtnOpenSettings";
       BtnOpenSettings.Size = new Size(100, 30);
       BtnOpenSettings.TabIndex = 0;
@@ -187,7 +197,7 @@
       // BtnConnect
       // 
       BtnConnect.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnConnect.Location = new Point(565, 11);
+      BtnConnect.Location = new Point(965, 11);
       BtnConnect.Name = "BtnConnect";
       BtnConnect.Size = new Size(100, 30);
       BtnConnect.TabIndex = 5;
@@ -202,7 +212,7 @@
       PnBody.Dock = DockStyle.Fill;
       PnBody.Location = new Point(0, 50);
       PnBody.Name = "PnBody";
-      PnBody.Size = new Size(784, 411);
+      PnBody.Size = new Size(1184, 611);
       PnBody.TabIndex = 3;
       PnBody.Visible = false;
       // 
@@ -214,7 +224,7 @@
       tabControl1.Location = new Point(0, 40);
       tabControl1.Name = "tabControl1";
       tabControl1.SelectedIndex = 0;
-      tabControl1.Size = new Size(784, 371);
+      tabControl1.Size = new Size(1184, 571);
       tabControl1.TabIndex = 10;
       // 
       // tabPage2
@@ -224,7 +234,7 @@
       tabPage2.Location = new Point(4, 24);
       tabPage2.Name = "tabPage2";
       tabPage2.Padding = new Padding(3);
-      tabPage2.Size = new Size(776, 343);
+      tabPage2.Size = new Size(1176, 543);
       tabPage2.TabIndex = 1;
       tabPage2.Text = "Details";
       tabPage2.UseVisualStyleBackColor = true;
@@ -285,6 +295,7 @@
       // LbStationTotalEnergy
       // 
       LbStationTotalEnergy.AutoSize = true;
+      LbStationTotalEnergy.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
       LbStationTotalEnergy.Location = new Point(162, 148);
       LbStationTotalEnergy.Margin = new Padding(3);
       LbStationTotalEnergy.Name = "LbStationTotalEnergy";
@@ -325,6 +336,7 @@
       // LbStationActivePower
       // 
       LbStationActivePower.AutoSize = true;
+      LbStationActivePower.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
       LbStationActivePower.Location = new Point(162, 43);
       LbStationActivePower.Margin = new Padding(3);
       LbStationActivePower.Name = "LbStationActivePower";
@@ -474,33 +486,78 @@
       tabPage4.Location = new Point(4, 24);
       tabPage4.Name = "tabPage4";
       tabPage4.Padding = new Padding(3);
-      tabPage4.Size = new Size(776, 343);
+      tabPage4.Size = new Size(1176, 543);
       tabPage4.TabIndex = 3;
       tabPage4.Text = "Historie";
       tabPage4.UseVisualStyleBackColor = true;
       // 
       // ChHistory
       // 
+      chartArea1.AxisY.LineColor = Color.Empty;
+      chartArea1.AxisY.Maximum = 600D;
+      chartArea1.Name = "Default";
+      ChHistory.ChartAreas.Add(chartArea1);
       ChHistory.Dock = DockStyle.Fill;
       ChHistory.Location = new Point(3, 33);
       ChHistory.Name = "ChHistory";
-      ChHistory.Size = new Size(770, 307);
+      series1.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.TopBottom;
+      series1.BorderColor = Color.RoyalBlue;
+      series1.BorderWidth = 2;
+      series1.ChartArea = "Default";
+      series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Area;
+      series1.IsValueShownAsLabel = true;
+      series1.IsXValueIndexed = true;
+      series1.LabelForeColor = Color.RoyalBlue;
+      series1.MarkerColor = Color.Navy;
+      series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+      series1.Name = "Default";
+      series1.Points.Add(dataPoint1);
+      series1.Points.Add(dataPoint2);
+      series1.Points.Add(dataPoint3);
+      series1.Points.Add(dataPoint4);
+      series1.Points.Add(dataPoint5);
+      series1.Points.Add(dataPoint6);
+      series1.ShadowColor = Color.Empty;
+      series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
+      series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+      ChHistory.Series.Add(series1);
+      ChHistory.Size = new Size(1170, 507);
       ChHistory.TabIndex = 13;
-      ChHistory.Text = "chart1";
       // 
       // panel2
       // 
+      panel2.Controls.Add(BtnDayAfter);
+      panel2.Controls.Add(BtnDayBefore);
       panel2.Controls.Add(DpHistoryDate);
       panel2.Controls.Add(label16);
       panel2.Controls.Add(label3);
       panel2.Controls.Add(LbHistoryTotal);
       panel2.Controls.Add(CbHistoryType);
-      panel2.Controls.Add(label15);
       panel2.Dock = DockStyle.Top;
       panel2.Location = new Point(3, 3);
       panel2.Name = "panel2";
-      panel2.Size = new Size(770, 30);
+      panel2.Size = new Size(1170, 30);
       panel2.TabIndex = 12;
+      // 
+      // BtnDayAfter
+      // 
+      BtnDayAfter.Location = new Point(164, 3);
+      BtnDayAfter.Name = "BtnDayAfter";
+      BtnDayAfter.Size = new Size(25, 23);
+      BtnDayAfter.TabIndex = 13;
+      BtnDayAfter.Text = ">";
+      BtnDayAfter.UseVisualStyleBackColor = true;
+      BtnDayAfter.Click += BtnDayAfter_Click;
+      // 
+      // BtnDayBefore
+      // 
+      BtnDayBefore.Location = new Point(33, 3);
+      BtnDayBefore.Name = "BtnDayBefore";
+      BtnDayBefore.Size = new Size(25, 23);
+      BtnDayBefore.TabIndex = 12;
+      BtnDayBefore.Text = "<";
+      BtnDayBefore.UseVisualStyleBackColor = true;
+      BtnDayBefore.Click += BtnDayBefore_Click;
       // 
       // DpHistoryDate
       // 
@@ -515,7 +572,7 @@
       // label16
       // 
       label16.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      label16.Location = new Point(559, 6);
+      label16.Location = new Point(959, 6);
       label16.Margin = new Padding(3);
       label16.Name = "label16";
       label16.Size = new Size(100, 15);
@@ -536,7 +593,8 @@
       // 
       LbHistoryTotal.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       LbHistoryTotal.AutoSize = true;
-      LbHistoryTotal.Location = new Point(665, 6);
+      LbHistoryTotal.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+      LbHistoryTotal.Location = new Point(1065, 6);
       LbHistoryTotal.Margin = new Padding(3);
       LbHistoryTotal.Name = "LbHistoryTotal";
       LbHistoryTotal.Size = new Size(16, 15);
@@ -553,15 +611,6 @@
       CbHistoryType.TabIndex = 1;
       CbHistoryType.SelectedIndexChanged += HistoryControl_ValueChanged;
       // 
-      // label15
-      // 
-      label15.AutoSize = true;
-      label15.Location = new Point(15, 6);
-      label15.Name = "label15";
-      label15.Size = new Size(43, 15);
-      label15.TabIndex = 3;
-      label15.Text = "Datum";
-      // 
       // panel1
       // 
       panel1.Controls.Add(BtnDisconnect);
@@ -571,13 +620,13 @@
       panel1.Dock = DockStyle.Top;
       panel1.Location = new Point(0, 0);
       panel1.Name = "panel1";
-      panel1.Size = new Size(784, 40);
+      panel1.Size = new Size(1184, 40);
       panel1.TabIndex = 9;
       // 
       // BtnDisconnect
       // 
       BtnDisconnect.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnDisconnect.Location = new Point(566, 6);
+      BtnDisconnect.Location = new Point(966, 6);
       BtnDisconnect.Name = "BtnDisconnect";
       BtnDisconnect.Size = new Size(100, 30);
       BtnDisconnect.TabIndex = 6;
@@ -597,7 +646,7 @@
       // BtnRefresh
       // 
       BtnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnRefresh.Location = new Point(672, 6);
+      BtnRefresh.Location = new Point(1072, 6);
       BtnRefresh.Name = "BtnRefresh";
       BtnRefresh.Size = new Size(100, 30);
       BtnRefresh.TabIndex = 8;
@@ -619,10 +668,11 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(784, 561);
+      ClientSize = new Size(1184, 761);
       Controls.Add(PnBody);
       Controls.Add(PnHeader);
       Controls.Add(PnFooter);
+      Icon = (Icon)resources.GetObject("$this.Icon");
       Name = "FormMain";
       StartPosition = FormStartPosition.CenterScreen;
       Tag = "TSunInverterMonitor - {0}";
@@ -695,7 +745,8 @@
     private Label label3;
     private Label LbHistoryTotal;
     private ComboBox CbHistoryType;
-    private Label label15;
     private Panel panel1;
+    private Button BtnDayAfter;
+    private Button BtnDayBefore;
   }
 }

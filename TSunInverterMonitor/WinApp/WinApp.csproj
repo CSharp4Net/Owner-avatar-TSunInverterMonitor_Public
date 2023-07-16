@@ -9,7 +9,12 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AssemblyName>NZZ.TSIM.WinApp</AssemblyName>
 		<RootNamespace>NZZ.TSIM.WinApp</RootNamespace>
+		<ApplicationIcon>solar-panel.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="solar-panel.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="WinForms.DataVisualization" Version="1.8.0" />

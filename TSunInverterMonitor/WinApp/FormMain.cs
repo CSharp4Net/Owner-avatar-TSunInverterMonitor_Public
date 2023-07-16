@@ -10,6 +10,7 @@ using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Text;
 using System.Text.Json;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Xml.Linq;
 using static System.Collections.Specialized.BitVector32;
@@ -89,16 +90,25 @@ namespace NZZ.TSIM.WinApp
 
     private async Task LoadStationHistoryOfDay(Station station, DateTime date)
     {
-      //LbLog.Items.Add($"Clear history...");
-      //Series series = ChHistory.Series[0];
-      //series.Points.Clear();
+      ChHistory.ChartAreas.Clear();
+      ChHistory.Series.Clear();
 
-      LbLog.Items.Add($"Load history for day '{date.ToString("yyyy-MM-dd")}'...");
-      StationAggregationDay? data = await Task.Run(() => ServiceConnection.GetStationAggregationOfDay(station, date));
+      StationAggregationDay? data = null;
+
+      if (ServiceSettings.HistoryBackup.Enabled && date < DateTime.Today)
+        // Versuche Daten aus Backup zu laden
+        data = HistoryBackup.GetAggregationOfDay(ServiceSettings.HistoryBackup.FolderPath, station.Guid, date);
 
       if (data == null)
       {
-        LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+        // Versuche Daten von Service zu laden
+        AddListBoxLogEntry($"Load history for day '{date.ToString("yyyy-MM-dd")}'...");
+        data = await Task.Run(() => ServiceConnection.GetStationAggregationOfDay(station, date));
+      }
+
+      if (data == null)
+      {
+        AddListBoxLogEntry($"Communication with T-SUN failed, please try again!");
         return;
       }
 
@@ -106,20 +116,50 @@ namespace NZZ.TSIM.WinApp
 
       if (ServiceSettings.HistoryBackup.Enabled)
         HistoryBackup.SaveAggregation(ServiceSettings.HistoryBackup.FolderPath, station.Guid, data);
+
+      ChartArea area = ChHistory.ChartAreas.Add("Default");
+      area.AxisX.IntervalType = DateTimeIntervalType.Minutes;
+      area.AxisX.Interval = 1;
+      area.AxisY.Maximum = 600D;
+
+      Series series = ChHistory.Series.Add("Default");
+      series.ChartArea = "Default";
+      series.SetDefault(true);
+      series.XValueType = ChartValueType.Time;
+      series.YValueType = ChartValueType.Double;
+      series.Enabled = true;
+      series.ChartType = SeriesChartType.Area;
+      series.BackGradientStyle = GradientStyle.TopBottom;
+      series.BorderWidth = 2;
+      series.IsXValueIndexed = true;
+      series.IsValueShownAsLabel = true;
+      series.BorderColor = Color.RoyalBlue;
+      series.LabelForeColor = Color.RoyalBlue;
+      series.ShadowColor = Color.Empty;
+      series.MarkerColor = Color.Navy;
+      series.MarkerStyle = MarkerStyle.Diamond;
+
+      // Echtdaten
+      foreach (var item in data.Peaks.ChartEntries)
+      {
+        var point = new DataPoint();
+        point.SetValueXY(item.PointOfTime, Math.Round(item.PeakPower));
+        point.ToolTip = string.Format("{0} - {1}W", item.PointOfTime.ToShortTimeString(), Math.Round(item.PeakPower));
+        series.Points.Add(point);
+      }
     }
 
     private async Task LoadStationHistoryOfMonth(string stationGuid, DateTime date)
     {
-      //LbLog.Items.Add($"Clear history...");
-      //Series series = ChHistory.Series[0];
-      //series.Points.Clear();
+      ChHistory.ChartAreas.Clear();
+      ChHistory.Series.Clear();
 
-      LbLog.Items.Add($"Load history for month '{date.ToString("yyyy-MM")}'...");
+      AddListBoxLogEntry($"Load history for month '{date.ToString("yyyy-MM")}'...");
       StationAggregationMonth? data = await Task.Run(() => ServiceConnection.GetStationAggregationOfMonth(stationGuid, date.Year, date.Month));
 
       if (data == null)
       {
-        LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+        AddListBoxLogEntry($"Communication with T-SUN failed, please try again!");
         return;
       }
 
@@ -131,16 +171,15 @@ namespace NZZ.TSIM.WinApp
 
     private async Task LoadStationHistoryOfYear(string stationGuid, DateTime date)
     {
-      //LbLog.Items.Add($"Clear history...");
-      //Series series = ChHistory.Series[0];
-      //series.Points.Clear();
+      ChHistory.ChartAreas.Clear();
+      ChHistory.Series.Clear();
 
-      LbLog.Items.Add($"Load history for year '{date.ToString("yyyy")}'...");
+      AddListBoxLogEntry($"Load history for year '{date.ToString("yyyy")}'...");
       StationAggregationYear? data = await Task.Run(() => ServiceConnection.GetStationAggregationOfYear(stationGuid, date.Year));
 
       if (data == null)
       {
-        LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+        AddListBoxLogEntry($"Communication with T-SUN failed, please try again!");
         return;
       }
 
@@ -148,6 +187,12 @@ namespace NZZ.TSIM.WinApp
 
       if (ServiceSettings.HistoryBackup.Enabled)
         HistoryBackup.SaveAggregation(ServiceSettings.HistoryBackup.FolderPath, stationGuid, data);
+    }
+
+    private void AddListBoxLogEntry(string message)
+    {
+      LbLog.Items.Add($"{DateTime.Now.ToString("HH:mm:ss.fff")} - {message}");
+      LbLog.TopIndex = LbLog.Items.Count - 1;
     }
 
     protected override void OnShown(EventArgs e)
@@ -195,29 +240,29 @@ namespace NZZ.TSIM.WinApp
           Password = TbServicePassword.Text
         };
 
-        LbLog.Items.Add($"Connecting as {credentials.UserName}...");
+        AddListBoxLogEntry($"Connecting as {credentials.UserName}...");
         LoginResult loginResult = await Task.Run(() => ServiceConnection.Login(credentials));
 
         SetMaskByConnectionState();
 
         if (!loginResult.Successful)
         {
-          LbLog.Items.Add($"Connecting failed: {loginResult.ErrorMessage}");
+          AddListBoxLogEntry($"Connecting failed: {loginResult.ErrorMessage}");
           MessageBox.Show(loginResult.ErrorMessage, "Fehlermeldung von T-SUN", MessageBoxButtons.OK, MessageBoxIcon.Warning);
           return;
         }
 
-        LbLog.Items.Add("Connecting established, get stations...");
+        AddListBoxLogEntry("Connecting established, get stations...");
         List<Station>? stations = await Task.Run(() => ServiceConnection.GetStations());
 
         if (stations == null)
         {
-          LbLog.Items.Add($"Get stations failed, please try again with [Refresh]!");
+          AddListBoxLogEntry($"Get stations failed, please try again with [Refresh]!");
           return;
         }
 
         Stations = new ObservableCollection<Station>(stations);
-        LbLog.Items.Add($"{Stations.Count} station(s) found!");
+        AddListBoxLogEntry($"{Stations.Count} station(s) found!");
         CbStations.DataSource = Stations;
 
         if (ServiceSettings.HistoryBackup.Enabled)
@@ -239,7 +284,7 @@ namespace NZZ.TSIM.WinApp
       {
         if (ServiceConnection.Connected)
         {
-          LbLog.Items.Add($"Disconnecting...");
+          AddListBoxLogEntry($"Disconnecting...");
           await ServiceConnection.Logout();
         }
       }
@@ -255,17 +300,17 @@ namespace NZZ.TSIM.WinApp
       {
         IsBusy = true;
 
-        LbLog.Items.Add("Get stations...");
+        AddListBoxLogEntry("Get stations...");
         List<Station>? stations = await Task.Run(() => ServiceConnection.GetStations());
 
         if (stations == null)
         {
-          LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+          AddListBoxLogEntry($"Communication with T-SUN failed, please try again!");
           return;
         }
 
         Stations = new ObservableCollection<Station>(stations);
-        LbLog.Items.Add($"{Stations.Count} station(s) found!");
+        AddListBoxLogEntry($"{Stations.Count} station(s) found!");
         CbStations.DataSource = Stations;
       }
       catch (Exception ex)
@@ -282,7 +327,7 @@ namespace NZZ.TSIM.WinApp
     {
       try
       {
-        LbLog.Items.Add($"Disconnecting...");
+        AddListBoxLogEntry($"Disconnecting...");
         await ServiceConnection.Logout();
         SetMaskByConnectionState();
         return;
@@ -303,19 +348,19 @@ namespace NZZ.TSIM.WinApp
         IsBusy = true;
 
         Station station = SelectedStation;
-        LbLog.Items.Add($"Load details of station '{station.Name}'...");
+        AddListBoxLogEntry($"Load details of station '{station.Name}'...");
         StationDetails? stationDetails = await Task.Run(() => ServiceConnection.GetStationDetails(station.Id));
 
         if (stationDetails == null)
         {
-          LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+          AddListBoxLogEntry($"Communication with T-SUN failed, please try again!");
           return;
         }
 
         station.TimeZone = stationDetails.TimeZone;
         station.TimeZoneOffset = stationDetails.TimeZoneOffset;
 
-        LbLog.Items.Add($"Details of station {station.Id} loaded!");
+        AddListBoxLogEntry($"Details of station {station.Id} loaded!");
         SetStationDetails(stationDetails);
 
         if (ServiceSettings.HistoryBackup.Enabled)
@@ -376,64 +421,55 @@ namespace NZZ.TSIM.WinApp
       ChHistory.Series.Clear();
 
       ChartArea area = ChHistory.ChartAreas.Add("Default");
-
-      Axis axis = area.AxisX;
-      //axis.IntervalType = DateTimeIntervalType.Minutes;
-      //axis.Interval = 1;
-      axis.Title = "Zeit";
-      axis.TitleFont = new Font("Arial", 16);
-
-      axis = area.AxisY;
-      axis.Title = "Watt";
-      axis.TitleFont = new Font("Arial", 16);
-      //axis.TitleAlignment = StringAlignment.Far;
+      area.AxisX.IntervalType = DateTimeIntervalType.Minutes;
+      area.AxisX.Interval = 1;
+      area.AxisY.Maximum = 600D;
 
       Series series = ChHistory.Series.Add("Default");
+      series.ChartArea = "Default";
       series.SetDefault(true);
+      series.XValueType = ChartValueType.Time;
+      series.YValueType = ChartValueType.Double;
       series.Enabled = true;
       series.ChartType = SeriesChartType.Area;
-      //series.Label = "Hallo Welt";
-
-      series.Points.Clear();
+      series.BackGradientStyle = GradientStyle.TopBottom;
+      series.BorderWidth = 2;
+      series.IsXValueIndexed = true;
+      series.IsValueShownAsLabel = true;
+      series.BorderColor = Color.RoyalBlue;
+      series.LabelForeColor = Color.RoyalBlue;
+      series.ShadowColor = Color.Empty;
+      series.MarkerColor = Color.Navy;
+      series.MarkerStyle = MarkerStyle.Diamond;
 
       // Künstlicher Start bei 0
-      var point = new DataPoint { LegendText = "05:00" };
-      point.SetValueXY(new DateTime(2023, 07, 12, 5, 0, 0), 0);
-      series.Points.Add(point);
-      // Echtdaten
-      point = new DataPoint { AxisLabel = "05:15" };
-      point.SetValueXY(new DateTime(2023, 07, 12, 5, 15, 0), 35);
-      series.Points.Add(point);
-      point = new DataPoint { AxisLabel = "05:30" };
-      point.SetValueXY(new DateTime(2023, 07, 12, 5, 30, 0), 55);
-      series.Points.Add(point);
-      point = new DataPoint { AxisLabel = "05:45" };
-      point.SetValueXY(new DateTime(2023, 07, 12, 5, 45, 0), 125);
-      series.Points.Add(point);
-      point = new DataPoint { AxisLabel = "06:00" };
-      point.SetValueXY(new DateTime(2023, 07, 12, 6, 0, 0), 250);
-      series.Points.Add(point);
-      // Künstliches Ende bei 0
-      point = new DataPoint { AxisLabel = "06:15" };
-      point.SetValueXY(new DateTime(2023, 07, 12, 6, 15, 0), 0);
+      var point = new DataPoint();
+      point.SetValueXY(peaksData.ChartEntries.First().PointOfTime.AddMinutes(-15), 0);
       series.Points.Add(point);
 
-      //series.XValueType = ChartValueType.Time;
-      //foreach (var item in peaksData.ChartEntries)
-      //{
-      //  var point = new DataPoint();
-      //  //if (counter % 60 == 0)
-      //  //{
-      //  point.AxisLabel = item.PointOfTime.ToString(@"hh\:mm");
-      //  point.SetValueXY(item.PointOfTime, item.PeakPower); // item.PointOfTime.Hour * 60 + item.PointOfTime.Minute;
-      //  //point.SetValueY(item.PeakPower);
-      //  //}
-      //  //else
-      //  //{
-      //  //  point.AxisLabel = String.Empty;
-      //  //}
-      //  series.Points.Add(point);
-      //}
+      // Echtdaten
+      foreach (var item in peaksData.ChartEntries)
+      {
+        point = new DataPoint();
+        point.SetValueXY(item.PointOfTime, Math.Round(item.PeakPower));
+        point.ToolTip = string.Format("{0} - {1}W", item.PointOfTime.ToShortTimeString(), Math.Round(item.PeakPower));
+        series.Points.Add(point);
+      }
+
+      // Künstliches Ende bei 0
+      point = new DataPoint();
+      point.SetValueXY(peaksData.ChartEntries.Last().PointOfTime.AddMinutes(15), 0);
+      series.Points.Add(point);
+    }
+
+    private void BtnDayBefore_Click(object sender, EventArgs e)
+    {
+      DpHistoryDate.Value = DpHistoryDate.Value.AddDays(-1);
+    }
+
+    private void BtnDayAfter_Click(object sender, EventArgs e)
+    {
+      DpHistoryDate.Value = DpHistoryDate.Value.AddDays(1);
     }
   }
 }

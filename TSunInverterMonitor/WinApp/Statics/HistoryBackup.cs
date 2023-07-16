@@ -39,19 +39,49 @@ namespace NZZ.TSIM.WinApp.Statics
       File.WriteAllText(Path.Combine(stationFolderPath, $"{aggregationData.Date}.json"), fileContent, Encoding.UTF8);
     }
 
-    internal static T? GetAggregation<T>(string folderPath, string stationGuid, DateTime date)
+    internal static StationAggregationDay? GetAggregationOfDay(string folderPath, string stationGuid, DateTime date)
     {
       string stationFolderPath = Path.Combine(folderPath, stationGuid);
       if (!Directory.Exists(stationFolderPath))
         return default;
 
-      string filePath = Path.Combine(stationFolderPath, $"{date}.json");
+      string filePath = Path.Combine(stationFolderPath, $"{date.ToString("yyyy-MM-dd")}.json");
       if (!File.Exists(filePath))
         return default;
 
       string fileContent = File.ReadAllText(filePath, Encoding.UTF8);
 
-      return JsonSerializer.Deserialize<T>(fileContent);
+      return JsonSerializer.Deserialize<StationAggregationDay>(fileContent);
+    }
+
+    internal static StationAggregationMonth? GetAggregationOfMonth(string folderPath, string stationGuid, DateTime date)
+    {
+      string stationFolderPath = Path.Combine(folderPath, stationGuid);
+      if (!Directory.Exists(stationFolderPath))
+        return default;
+
+      string filePath = Path.Combine(stationFolderPath, $"{date.ToString("yyyy-MM")}.json");
+      if (!File.Exists(filePath))
+        return default;
+
+      string fileContent = File.ReadAllText(filePath, Encoding.UTF8);
+
+      return JsonSerializer.Deserialize<StationAggregationMonth>(fileContent);
+    }
+
+    internal static StationAggregationYear? GetAggregationOfYear(string folderPath, string stationGuid, DateTime date)
+    {
+      string stationFolderPath = Path.Combine(folderPath, stationGuid);
+      if (!Directory.Exists(stationFolderPath))
+        return default;
+
+      string filePath = Path.Combine(stationFolderPath, $"{date.ToString("yyyy")}.json");
+      if (!File.Exists(filePath))
+        return default;
+
+      string fileContent = File.ReadAllText(filePath, Encoding.UTF8);
+
+      return JsonSerializer.Deserialize<StationAggregationYear>(fileContent);
     }
   }
 }
