@@ -2,7 +2,7 @@
 
 namespace NZZ.TSIM.Contracts.Models
 {
-  public sealed class StationAggregationDayPeaks : StationAggregationReporterData
+  public sealed class StationAggregationDayPeaks
   {
     [JsonPropertyName("dimensions")]
     public List<string> Dimensions { get; set; } = new List<string>();

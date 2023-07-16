@@ -17,6 +17,13 @@ namespace NZZ.TSIM.Contracts.Models
     [JsonPropertyName("status")]
     public string Status { get; set; } = "";
 
+    /// <summary>
+    /// Zeitzone
+    /// Achtung: Wird nicht durch JSON-Serialisierung gesetzt, sondern sobald die Details einer Station abgerufen werden.
+    /// </summary>
+    public string TimeZone { get; set; } = "";
+    public string TimeZoneOffset { get; set; } = "";
+
     public override string ToString()
     {
       return $"{Name} ({Status})";

@@ -36,8 +36,8 @@
       groupBox2 = new GroupBox();
       BtnBrowse = new Button();
       label5 = new Label();
-      CkAggregationLogEnabled = new CheckBox();
-      TbAggregationLogFolderPath = new TextBox();
+      CkHistoryBackupEnabled = new CheckBox();
+      TbHistoryBackupFolderPath = new TextBox();
       panel1 = new Panel();
       BtnSave = new Button();
       BtnAbort = new Button();
@@ -100,8 +100,8 @@
       // 
       groupBox2.Controls.Add(BtnBrowse);
       groupBox2.Controls.Add(label5);
-      groupBox2.Controls.Add(CkAggregationLogEnabled);
-      groupBox2.Controls.Add(TbAggregationLogFolderPath);
+      groupBox2.Controls.Add(CkHistoryBackupEnabled);
+      groupBox2.Controls.Add(TbHistoryBackupFolderPath);
       groupBox2.Location = new Point(12, 100);
       groupBox2.Name = "groupBox2";
       groupBox2.Size = new Size(460, 88);
@@ -129,25 +129,25 @@
       label5.TabIndex = 8;
       label5.Text = "Verzeichnis";
       // 
-      // CkAggregationLogEnabled
+      // CkHistoryBackupEnabled
       // 
-      CkAggregationLogEnabled.AutoSize = true;
-      CkAggregationLogEnabled.Location = new Point(106, 24);
-      CkAggregationLogEnabled.Name = "CkAggregationLogEnabled";
-      CkAggregationLogEnabled.Size = new Size(227, 19);
-      CkAggregationLogEnabled.TabIndex = 1;
-      CkAggregationLogEnabled.Text = "Aggregierte Daten lokal protokollieren";
-      CkAggregationLogEnabled.UseVisualStyleBackColor = true;
-      CkAggregationLogEnabled.CheckedChanged += CkAggregationLogEnabled_CheckedChanged;
+      CkHistoryBackupEnabled.AutoSize = true;
+      CkHistoryBackupEnabled.Location = new Point(106, 24);
+      CkHistoryBackupEnabled.Name = "CkHistoryBackupEnabled";
+      CkHistoryBackupEnabled.Size = new Size(227, 19);
+      CkHistoryBackupEnabled.TabIndex = 1;
+      CkHistoryBackupEnabled.Text = "Aggregierte Daten lokal protokollieren";
+      CkHistoryBackupEnabled.UseVisualStyleBackColor = true;
+      CkHistoryBackupEnabled.CheckedChanged += CkAggregationLogEnabled_CheckedChanged;
       // 
-      // TbAggregationLogFolderPath
+      // TbHistoryBackupFolderPath
       // 
-      TbAggregationLogFolderPath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-      TbAggregationLogFolderPath.Location = new Point(106, 49);
-      TbAggregationLogFolderPath.Name = "TbAggregationLogFolderPath";
-      TbAggregationLogFolderPath.PlaceholderText = "Verzeichnispfad zur Ablage ihrer T-SUN Leistungsdaten";
-      TbAggregationLogFolderPath.Size = new Size(305, 23);
-      TbAggregationLogFolderPath.TabIndex = 0;
+      TbHistoryBackupFolderPath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      TbHistoryBackupFolderPath.Location = new Point(106, 49);
+      TbHistoryBackupFolderPath.Name = "TbHistoryBackupFolderPath";
+      TbHistoryBackupFolderPath.PlaceholderText = "Verzeichnispfad zur Ablage ihrer T-SUN Leistungsdaten";
+      TbHistoryBackupFolderPath.Size = new Size(305, 23);
+      TbHistoryBackupFolderPath.TabIndex = 0;
       // 
       // panel1
       // 
@@ -217,8 +217,8 @@
     private Label label2;
     private GroupBox groupBox2;
     private Label label5;
-    private CheckBox CkAggregationLogEnabled;
-    private TextBox TbAggregationLogFolderPath;
+    private CheckBox CkHistoryBackupEnabled;
+    private TextBox TbHistoryBackupFolderPath;
     private Panel panel1;
     private Button BtnSave;
     private Button BtnAbort;

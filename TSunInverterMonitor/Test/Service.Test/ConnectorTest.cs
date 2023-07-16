@@ -12,7 +12,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection(new ServiceSettings());
+                IConnection connection = new Connection(new ServiceSettings(), Path.GetTempFileName());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -33,7 +33,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection(new ServiceSettings());
+                IConnection connection = new Connection(new ServiceSettings(), Path.GetTempFileName());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -59,7 +59,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection(new ServiceSettings());
+                IConnection connection = new Connection(new ServiceSettings(), Path.GetTempFileName());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -87,7 +87,7 @@ namespace NZZ.TSIM.Service.Test
         {
             try
             {
-                IConnection connection = new Connection(new ServiceSettings());
+                IConnection connection = new Connection(new ServiceSettings(), Path.GetTempFileName());
 
                 LoginCredentials credentials = LoadCredentials();
 
@@ -98,11 +98,9 @@ namespace NZZ.TSIM.Service.Test
 
                 var stations = connection.GetStations().Result!;
 
-                List<string> guids = new List<string> { stations[0].Guid };
-
-                var aggregationOfDay = connection.GetStationAggregationOfDay(guids, DateTime.Today).Result;
-                var aggregationOfMonth = connection.GetStationAggregationOfMonth(guids, 2023, 7).Result;
-                var aggregationOfYear = connection.GetStationAggregationOfYear(guids, 2023).Result;
+                var aggregationOfDay = connection.GetStationAggregationOfDay(stations[0], DateTime.Today).Result;
+                var aggregationOfMonth = connection.GetStationAggregationOfMonth(stations[0].Guid, 2023, 7).Result;
+                var aggregationOfYear = connection.GetStationAggregationOfYear(stations[0].Guid, 2023).Result;
 
                 Assert.IsNotNull(aggregationOfDay, loginResult.ErrorMessage);
                 Assert.IsNotNull(aggregationOfMonth, loginResult.ErrorMessage);

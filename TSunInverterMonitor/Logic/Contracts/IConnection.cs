@@ -35,10 +35,10 @@ namespace NZZ.TSIM.Contracts
     /// <summary>
     /// Gibt detaillierte aggregierte Werte zu einer Station für einen bestimmten Tag zurück oder NULL, wenn die Daten nicht abgefragt werden konnten.
     /// </summary>
-    /// <param name="guid">Guid der Station</param>
+    /// <param name="station">Station</param>
     /// <param name="date">Datum</param>
     /// <returns></returns>
-    Task<StationAggregationDay?> GetStationAggregationOfDay(string guid, DateTime date);
+    Task<StationAggregationDay?> GetStationAggregationOfDay(Station station, DateTime date);
     /// <summary>
     /// Gibt detaillierte aggregierte Werte zu einer Station für einen bestimmten Tag zurück oder NULL, wenn die Daten nicht abgefragt werden konnten.
     /// </summary>

@@ -24,9 +24,9 @@ namespace NZZ.TSIM.WinApp
         TbServiceRootUrl.Text = ServiceSettings.RootUrl;
         TbServiceApiPattern.Text = ServiceSettings.ApiPattern;
 
-        CkAggregationLogEnabled.Checked = ServiceSettings.AggregationDataLogSettings.Enabled;
-        TbAggregationLogFolderPath.Text = ServiceSettings.AggregationDataLogSettings.FolderPath;
-        TbAggregationLogFolderPath.ReadOnly = !CkAggregationLogEnabled.Checked;
+        CkHistoryBackupEnabled.Checked = ServiceSettings.HistoryBackup.Enabled;
+        TbHistoryBackupFolderPath.Text = ServiceSettings.HistoryBackup.FolderPath;
+        TbHistoryBackupFolderPath.ReadOnly = !CkHistoryBackupEnabled.Checked;
       }
       catch (Exception ex)
       {
@@ -43,11 +43,17 @@ namespace NZZ.TSIM.WinApp
     {
       try
       {
+        if (CkHistoryBackupEnabled.Checked && (string.IsNullOrWhiteSpace(TbHistoryBackupFolderPath.Text) || !Directory.Exists(TbHistoryBackupFolderPath.Text)))
+        {
+          MessageBox.Show("Ist das Datenprotokoll aktiviert, muss ein Verzeichnis ausgewählt sein!", "Validierung fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          return;
+        }
+
         ServiceSettings.RootUrl = TbServiceRootUrl.Text;
         ServiceSettings.ApiPattern = TbServiceApiPattern.Text;
 
-        ServiceSettings.AggregationDataLogSettings.Enabled = CkAggregationLogEnabled.Checked;
-        ServiceSettings.AggregationDataLogSettings.FolderPath = TbAggregationLogFolderPath.Text;
+        ServiceSettings.HistoryBackup.Enabled = CkHistoryBackupEnabled.Checked;
+        ServiceSettings.HistoryBackup.FolderPath = TbHistoryBackupFolderPath.Text;
 
         ConfigFile.SaveSettings(ServiceSettings);
       }
@@ -59,7 +65,7 @@ namespace NZZ.TSIM.WinApp
 
     private void CkAggregationLogEnabled_CheckedChanged(object sender, EventArgs e)
     {
-      TbAggregationLogFolderPath.ReadOnly = !CkAggregationLogEnabled.Checked;
+      TbHistoryBackupFolderPath.ReadOnly = !CkHistoryBackupEnabled.Checked;
     }
 
     private void BtnBrowse_Click(object sender, EventArgs e)
@@ -67,7 +73,7 @@ namespace NZZ.TSIM.WinApp
       var dialog = new FolderBrowserDialog();
       var dialogResult = dialog.ShowDialog(this);
       if (dialogResult == DialogResult.OK)
-        TbAggregationLogFolderPath.Text = dialog.SelectedPath;
+        TbHistoryBackupFolderPath.Text = dialog.SelectedPath;
     }
   }
 }

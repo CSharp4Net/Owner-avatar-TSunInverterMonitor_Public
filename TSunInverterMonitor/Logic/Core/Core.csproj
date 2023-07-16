@@ -4,13 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>NZZ.TSIM.Service</RootNamespace>
-    <AssemblyName>NZZ.TSIM.Service</AssemblyName>
+	  <AssemblyName>NZZ.TSIM.Core</AssemblyName>
+	  <RootNamespace>NZZ.TSIM.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
-    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
 </Project>

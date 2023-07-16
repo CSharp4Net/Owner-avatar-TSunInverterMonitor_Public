@@ -1,4 +1,5 @@
-﻿using NZZ.TSIM.Contracts.Models;
+﻿using Microsoft.VisualBasic;
+using NZZ.TSIM.Contracts.Models;
 using NZZ.TSIM.Service;
 using NZZ.TSIM.WinApp.Internal.Models;
 using NZZ.TSIM.WinApp.Statics;
@@ -68,40 +69,85 @@ namespace NZZ.TSIM.WinApp
       }
     }
 
-    private void SetStationDetails(StationDetails details)
+    private void SetStationDetails(StationDetails stationDetails)
     {
-      LbStationId.Text = details.Id.ToString();
-      LbStationGuid.Text = details.Guid;
-      LbStationAddress.Text = details.Location;
+      LbStationId.Text = stationDetails.Id.ToString();
+      LbStationGuid.Text = stationDetails.Guid;
+      LbStationAddress.Text = stationDetails.Location;
 
       LbStationTimeStamp.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-      LbStationActivePower.Text = details.ActivePowerNamed;
-      LbStationTodayPeakPower.Text = details.TodayPeakPowerNamed;
+      LbStationActivePower.Text = stationDetails.ActivePowerNamed;
+      LbStationTodayPeakPower.Text = stationDetails.TodayPeakPowerNamed;
 
-      LbStationCurrentDayEnergy.Text = details.CurrentDayEnergyNamed;
-      LbStationCurrentMonthEnergy.Text = details.CurrentMonthEnergyNamed;
-      LbStationCurrentYearEnergy.Text = details.CurrentYearEnergyNamed;
-      LbStationTotalEnergy.Text = details.TotalEnergyNamed;
+      LbStationCurrentDayEnergy.Text = stationDetails.CurrentDayEnergyNamed;
+      LbStationCurrentMonthEnergy.Text = stationDetails.CurrentMonthEnergyNamed;
+      LbStationCurrentYearEnergy.Text = stationDetails.CurrentYearEnergyNamed;
+      LbStationTotalEnergy.Text = stationDetails.TotalEnergyNamed;
 
       CbHistoryType.DataSource = HistoryTypes;
     }
 
-    private async Task LoadStationHistoryOfDay(string stationGuid, DateTime date)
+    private async Task LoadStationHistoryOfDay(Station station, DateTime date)
     {
       //LbLog.Items.Add($"Clear history...");
       //Series series = ChHistory.Series[0];
       //series.Points.Clear();
 
-      LbLog.Items.Add($"Load history for day '{date.ToString("yyyy-MM-dd")}' ...");
-      StationAggregationDay? aggregationDay = await Task.Run(() => ServiceConnection.GetStationAggregationOfDay(stationGuid, date));
+      LbLog.Items.Add($"Load history for day '{date.ToString("yyyy-MM-dd")}'...");
+      StationAggregationDay? data = await Task.Run(() => ServiceConnection.GetStationAggregationOfDay(station, date));
 
-      if (aggregationDay == null)
+      if (data == null)
       {
         LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
         return;
       }
 
-      LbHistoryTotal.Text = aggregationDay.TotalEnergy;
+      LbHistoryTotal.Text = data.TotalEnergy;
+
+      if (ServiceSettings.HistoryBackup.Enabled)
+        HistoryBackup.SaveAggregation(ServiceSettings.HistoryBackup.FolderPath, station.Guid, data);
+    }
+
+    private async Task LoadStationHistoryOfMonth(string stationGuid, DateTime date)
+    {
+      //LbLog.Items.Add($"Clear history...");
+      //Series series = ChHistory.Series[0];
+      //series.Points.Clear();
+
+      LbLog.Items.Add($"Load history for month '{date.ToString("yyyy-MM")}'...");
+      StationAggregationMonth? data = await Task.Run(() => ServiceConnection.GetStationAggregationOfMonth(stationGuid, date.Year, date.Month));
+
+      if (data == null)
+      {
+        LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+        return;
+      }
+
+      LbHistoryTotal.Text = data.TotalEnergy;
+
+      if (ServiceSettings.HistoryBackup.Enabled)
+        HistoryBackup.SaveAggregation(ServiceSettings.HistoryBackup.FolderPath, stationGuid, data);
+    }
+
+    private async Task LoadStationHistoryOfYear(string stationGuid, DateTime date)
+    {
+      //LbLog.Items.Add($"Clear history...");
+      //Series series = ChHistory.Series[0];
+      //series.Points.Clear();
+
+      LbLog.Items.Add($"Load history for year '{date.ToString("yyyy")}'...");
+      StationAggregationYear? data = await Task.Run(() => ServiceConnection.GetStationAggregationOfYear(stationGuid, date.Year));
+
+      if (data == null)
+      {
+        LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
+        return;
+      }
+
+      LbHistoryTotal.Text = data.TotalEnergy;
+
+      if (ServiceSettings.HistoryBackup.Enabled)
+        HistoryBackup.SaveAggregation(ServiceSettings.HistoryBackup.FolderPath, stationGuid, data);
     }
 
     protected override void OnShown(EventArgs e)
@@ -110,8 +156,11 @@ namespace NZZ.TSIM.WinApp
 
       try
       {
+        if (!Directory.Exists(AppDataPath.LogFolderPath))
+          Directory.CreateDirectory(AppDataPath.LogFolderPath);
+
         ServiceSettings = ConfigFile.LoadSettings();
-        ServiceConnection = new Connection(ServiceSettings);
+        ServiceConnection = new Connection(ServiceSettings, AppDataPath.LogFolderPath);
 
         TbServiceUserName.Text = Properties.Settings.Default.LastUserName;
 
@@ -170,6 +219,9 @@ namespace NZZ.TSIM.WinApp
         Stations = new ObservableCollection<Station>(stations);
         LbLog.Items.Add($"{Stations.Count} station(s) found!");
         CbStations.DataSource = Stations;
+
+        if (ServiceSettings.HistoryBackup.Enabled)
+          HistoryBackup.SaveStationList(ServiceSettings.HistoryBackup.FolderPath, stations);
       }
       catch (Exception ex)
       {
@@ -252,16 +304,22 @@ namespace NZZ.TSIM.WinApp
 
         Station station = SelectedStation;
         LbLog.Items.Add($"Load details of station '{station.Name}'...");
-        StationDetails? details = await Task.Run(() => ServiceConnection.GetStationDetails(station.Id));
+        StationDetails? stationDetails = await Task.Run(() => ServiceConnection.GetStationDetails(station.Id));
 
-        if (details == null)
+        if (stationDetails == null)
         {
           LbLog.Items.Add($"Communication with T-SUN failed, please try again!");
           return;
         }
 
+        station.TimeZone = stationDetails.TimeZone;
+        station.TimeZoneOffset = stationDetails.TimeZoneOffset;
+
         LbLog.Items.Add($"Details of station {station.Id} loaded!");
-        SetStationDetails(details);
+        SetStationDetails(stationDetails);
+
+        if (ServiceSettings.HistoryBackup.Enabled)
+          HistoryBackup.SaveStationDetails(ServiceSettings.HistoryBackup.FolderPath, stationDetails);
       }
       catch (Exception ex)
       {
@@ -287,13 +345,13 @@ namespace NZZ.TSIM.WinApp
         switch (SelectedHistoryType.Key)
         {
           case "day":
-            await LoadStationHistoryOfDay(SelectedStation.Guid, DpHistoryDate.Value);
+            await LoadStationHistoryOfDay(SelectedStation, DpHistoryDate.Value);
             break;
           case "month":
-            //await LoadStationHistoryOfMonth(SelectedStation.Guid, DpHistoryDate.Value);
+            await LoadStationHistoryOfMonth(SelectedStation.Guid, DpHistoryDate.Value);
             break;
           case "year":
-            //await LoadStationHistoryOfYear(SelectedStation.Guid, DpHistoryDate.Value);
+            await LoadStationHistoryOfYear(SelectedStation.Guid, DpHistoryDate.Value);
             break;
         }
       }
@@ -320,8 +378,8 @@ namespace NZZ.TSIM.WinApp
       ChartArea area = ChHistory.ChartAreas.Add("Default");
 
       Axis axis = area.AxisX;
-      axis.IntervalType = DateTimeIntervalType.Hours;
-      //axis.Interval = 15;
+      //axis.IntervalType = DateTimeIntervalType.Minutes;
+      //axis.Interval = 1;
       axis.Title = "Zeit";
       axis.TitleFont = new Font("Arial", 16);
 
