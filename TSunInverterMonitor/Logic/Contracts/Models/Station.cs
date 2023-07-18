@@ -26,7 +26,7 @@ namespace NZZ.TSIM.Contracts.Models
 
     public override string ToString()
     {
-      return $"{Name} ({Status})";
+      return $"{Name} ({Id})";
     }
   }
 }
