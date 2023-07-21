@@ -4,7 +4,5 @@
     {
         public string RootUrl { get; set; } = "https://www.talent-monitoring.com";
         public string ApiPattern { get; set; } = "prod-api";
-
-        public HistoryBackupSettings HistoryBackup { get; set; } = new HistoryBackupSettings();
     }
 }

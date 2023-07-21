@@ -1,4 +1,5 @@
 ﻿using NZZ.TSIM.Contracts.Models;
+using NZZ.TSIM.WinApp.Models;
 using NZZ.TSIM.WinApp.Statics;
 
 namespace NZZ.TSIM.WinApp
@@ -9,24 +10,28 @@ namespace NZZ.TSIM.WinApp
     {
       InitializeComponent();
     }
-    public FormSettings(ServiceSettings serviceSettings)
+    public FormSettings(AppSettings appSettings)
         : this()
     {
-      ServiceSettings = serviceSettings;
+      AppSettings = appSettings;
     }
 
-    private ServiceSettings ServiceSettings { get; init; }
+    private AppSettings AppSettings { get; init; }
 
     private void FormSettings_Load(object sender, EventArgs e)
     {
       try
       {
-        TbServiceRootUrl.Text = ServiceSettings.RootUrl;
-        TbServiceApiPattern.Text = ServiceSettings.ApiPattern;
+        TbServiceRootUrl.Text = AppSettings.Service.RootUrl;
+        TbServiceApiPattern.Text = AppSettings.Service.ApiPattern;
 
-        CkHistoryBackupEnabled.Checked = ServiceSettings.HistoryBackup.Enabled;
-        TbHistoryBackupFolderPath.Text = ServiceSettings.HistoryBackup.FolderPath;
+        CkHistoryBackupEnabled.Checked = AppSettings.History.Enabled;
+        TbHistoryBackupFolderPath.Text = AppSettings.History.FolderPath;
         TbHistoryBackupFolderPath.ReadOnly = !CkHistoryBackupEnabled.Checked;
+
+        CkAutoLogin.Checked = AppSettings.AutoLoginAfterStart;
+        CkAutoMaximize.Checked = AppSettings.AutoMaximizeAfterStart;
+        CkAutoSyncService.Checked = AppSettings.AutoSyncAfterLogin;
       }
       catch (Exception ex)
       {
@@ -49,13 +54,19 @@ namespace NZZ.TSIM.WinApp
           return;
         }
 
-        ServiceSettings.RootUrl = TbServiceRootUrl.Text;
-        ServiceSettings.ApiPattern = TbServiceApiPattern.Text;
+        AppSettings.Service.RootUrl = TbServiceRootUrl.Text;
+        AppSettings.Service.ApiPattern = TbServiceApiPattern.Text;
 
-        ServiceSettings.HistoryBackup.Enabled = CkHistoryBackupEnabled.Checked;
-        ServiceSettings.HistoryBackup.FolderPath = TbHistoryBackupFolderPath.Text;
+        AppSettings.History.Enabled = CkHistoryBackupEnabled.Checked;
+        AppSettings.History.FolderPath = TbHistoryBackupFolderPath.Text;
 
-        ConfigFile.SaveSettings(ServiceSettings);
+        AppSettings.AutoLoginAfterStart = CkAutoLogin.Checked;
+        AppSettings.AutoMaximizeAfterStart = CkAutoMaximize.Checked;
+        AppSettings.AutoSyncAfterLogin = CkAutoSyncService.Checked;
+
+        ConfigFile.SaveSettings(AppSettings);
+
+        MessageBox.Show("Einstellungen gespeichert.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
       catch (Exception ex)
       {

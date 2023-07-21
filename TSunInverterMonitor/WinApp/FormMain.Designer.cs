@@ -28,6 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
       System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
@@ -45,6 +46,7 @@
       PnBody = new Panel();
       ChHistory = new System.Windows.Forms.DataVisualization.Charting.Chart();
       panel2 = new Panel();
+      BtnReloadHistory = new Button();
       label5 = new Label();
       BtnDayAfter = new Button();
       BtnDayBefore = new Button();
@@ -53,6 +55,7 @@
       LbHistoryTotal = new Label();
       CbHistoryType = new ComboBox();
       panel1 = new Panel();
+      BtnOpenHistoryFolder = new Button();
       LbStationInstalledCapacity = new Label();
       label17 = new Label();
       LbStationTimeZone = new Label();
@@ -79,6 +82,7 @@
       BtnRefresh = new Button();
       CbStations = new ComboBox();
       label8 = new Label();
+      TmAutoSync = new System.Windows.Forms.Timer(components);
       PnFooter.SuspendLayout();
       PnHeader.SuspendLayout();
       PnBody.SuspendLayout();
@@ -132,7 +136,7 @@
       BtnOpenWorkFolder.Name = "BtnOpenWorkFolder";
       BtnOpenWorkFolder.Size = new Size(150, 25);
       BtnOpenWorkFolder.TabIndex = 7;
-      BtnOpenWorkFolder.Text = "Arbeitsverzeichnis";
+      BtnOpenWorkFolder.Text = "Arbeitsverzeichnis ...";
       BtnOpenWorkFolder.UseVisualStyleBackColor = true;
       BtnOpenWorkFolder.Click += BtnOpenWorkFolder_Click;
       // 
@@ -145,6 +149,7 @@
       BtnDebug.TabIndex = 6;
       BtnDebug.Text = "DEBUG";
       BtnDebug.UseVisualStyleBackColor = true;
+      BtnDebug.Visible = false;
       BtnDebug.Click += BtnDebug_Click;
       // 
       // TbServicePassword
@@ -230,6 +235,7 @@
       // 
       // panel2
       // 
+      panel2.Controls.Add(BtnReloadHistory);
       panel2.Controls.Add(label5);
       panel2.Controls.Add(BtnDayAfter);
       panel2.Controls.Add(BtnDayBefore);
@@ -242,6 +248,17 @@
       panel2.Name = "panel2";
       panel2.Size = new Size(1184, 35);
       panel2.TabIndex = 14;
+      // 
+      // BtnReloadHistory
+      // 
+      BtnReloadHistory.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      BtnReloadHistory.Location = new Point(1022, 6);
+      BtnReloadHistory.Name = "BtnReloadHistory";
+      BtnReloadHistory.Size = new Size(150, 25);
+      BtnReloadHistory.TabIndex = 24;
+      BtnReloadHistory.Text = "Neu abrufen";
+      BtnReloadHistory.UseVisualStyleBackColor = true;
+      BtnReloadHistory.Click += BtnReloadHistory_Click;
       // 
       // label5
       // 
@@ -319,6 +336,7 @@
       // panel1
       // 
       panel1.BorderStyle = BorderStyle.FixedSingle;
+      panel1.Controls.Add(BtnOpenHistoryFolder);
       panel1.Controls.Add(LbStationInstalledCapacity);
       panel1.Controls.Add(label17);
       panel1.Controls.Add(LbStationTimeZone);
@@ -350,6 +368,17 @@
       panel1.Name = "panel1";
       panel1.Size = new Size(1184, 110);
       panel1.TabIndex = 9;
+      // 
+      // BtnOpenHistoryFolder
+      // 
+      BtnOpenHistoryFolder.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      BtnOpenHistoryFolder.Location = new Point(1021, 69);
+      BtnOpenHistoryFolder.Name = "BtnOpenHistoryFolder";
+      BtnOpenHistoryFolder.Size = new Size(150, 25);
+      BtnOpenHistoryFolder.TabIndex = 24;
+      BtnOpenHistoryFolder.Text = "Protokollverzeichnis ...";
+      BtnOpenHistoryFolder.UseVisualStyleBackColor = true;
+      BtnOpenHistoryFolder.Click += BtnOpenHistoryFolder_Click;
       // 
       // LbStationInstalledCapacity
       // 
@@ -405,6 +434,7 @@
       // LbStationTodayPeakPower
       // 
       LbStationTodayPeakPower.AutoSize = true;
+      LbStationTodayPeakPower.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
       LbStationTodayPeakPower.Location = new Point(619, 61);
       LbStationTodayPeakPower.Margin = new Padding(3);
       LbStationTodayPeakPower.Name = "LbStationTodayPeakPower";
@@ -496,6 +526,7 @@
       // 
       // label10
       // 
+      label10.Font = new Font("Segoe UI", 9.75F, FontStyle.Strikeout, GraphicsUnit.Point);
       label10.Location = new Point(464, 61);
       label10.Margin = new Padding(3);
       label10.Name = "label10";
@@ -517,7 +548,7 @@
       // BtnDisconnect
       // 
       BtnDisconnect.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnDisconnect.Location = new Point(1020, 38);
+      BtnDisconnect.Location = new Point(1021, 38);
       BtnDisconnect.Name = "BtnDisconnect";
       BtnDisconnect.Size = new Size(150, 25);
       BtnDisconnect.TabIndex = 6;
@@ -588,11 +619,11 @@
       // BtnRefresh
       // 
       BtnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnRefresh.Location = new Point(1020, 7);
+      BtnRefresh.Location = new Point(1021, 8);
       BtnRefresh.Name = "BtnRefresh";
       BtnRefresh.Size = new Size(150, 25);
       BtnRefresh.TabIndex = 8;
-      BtnRefresh.Text = "Aktualisieren";
+      BtnRefresh.Text = "Synchronisieren";
       BtnRefresh.UseVisualStyleBackColor = true;
       BtnRefresh.Click += BtnRefresh_Click;
       // 
@@ -616,6 +647,11 @@
       label8.TabIndex = 7;
       label8.Text = "Aktuelle Leistung:";
       label8.TextAlign = ContentAlignment.TopRight;
+      // 
+      // TmAutoSync
+      // 
+      TmAutoSync.Interval = 300000;
+      TmAutoSync.Tick += TmAutoSync_Tick;
       // 
       // FormMain
       // 
@@ -692,5 +728,8 @@
     private Label label17;
     private Label LbStationTimeZone;
     private Label label15;
+    private Button BtnReloadHistory;
+    private Button BtnOpenHistoryFolder;
+    private System.Windows.Forms.Timer TmAutoSync;
   }
 }
