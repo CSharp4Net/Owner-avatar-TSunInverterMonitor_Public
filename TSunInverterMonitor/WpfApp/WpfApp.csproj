@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>NZZ.TSIM.WpfApp</RootNamespace>
+    <AssemblyName>NZZ.TSIM.WpfApp</AssemblyName>
+    <IsPublishable>False</IsPublishable>
+    <ApplicationIcon>solar-panel.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="solar-panel.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Logic\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Logic\Core\Core.csproj" />
+    <ProjectReference Include="..\Logic\Service\Service.csproj" />
+  </ItemGroup>
+
+</Project>
