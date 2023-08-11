@@ -4,9 +4,64 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        mc:Ignorable="d" Height="500" Width="800" 
+        Tag="T-SUN Inverter Monitor - {0}" 
+        Title="T-SUN Inverter Monitor - Nicht verbunden" 
+        FontFamily="Calibri" FontSize="16" WindowStartupLocation="CenterScreen">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black"/>
+            <GradientStop Color="#FF0078D7" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
     <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="2*" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Row="0" Grid.Column="0" Margin="3" Content="Einstellungen" Click="BtnShowSettings_Click" />
+                <Button Grid.Row="0" Grid.Column="2" Margin="3" Content="Arbeitsverzeichnis..." />
+
+                <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="3" BorderThickness="1,1,1,1" BorderBrush="#FFD0D2D2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="E-Mail:" TextAlignment="Right" Margin="3" VerticalAlignment="Center" Foreground="#FFD0D2D2" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="3" VerticalContentAlignment="Center" />
+                        <TextBlock Grid.Row="1" Text="Kennwort:" TextAlignment="Right" Margin="3" VerticalAlignment="Center" Foreground="#FFD0D2D2" />
+                        <PasswordBox Grid.Row="1" Grid.Column="1" Margin="3" VerticalContentAlignment="Center" />
+                        <Button Grid.Row="1" Grid.Column="2" Margin="3" Content="Verbinden" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

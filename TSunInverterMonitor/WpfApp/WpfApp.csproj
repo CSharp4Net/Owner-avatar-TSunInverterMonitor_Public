@@ -12,6 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="solar-panel.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="solar-panel.ico" />
   </ItemGroup>
 
@@ -19,6 +23,10 @@
     <ProjectReference Include="..\Logic\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Logic\Core\Core.csproj" />
     <ProjectReference Include="..\Logic\Service\Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="solar-panel.png" />
   </ItemGroup>
 
 </Project>

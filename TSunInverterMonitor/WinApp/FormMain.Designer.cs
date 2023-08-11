@@ -665,8 +665,8 @@
       Icon = (Icon)resources.GetObject("$this.Icon");
       Name = "FormMain";
       StartPosition = FormStartPosition.CenterScreen;
-      Tag = "TSunInverterMonitor - {0}";
-      Text = "TSunInverterMonitor - Nicht verbunden";
+      Tag = "T-SUN Inverter Monitor - {0}";
+      Text = "T-SUN Inverter Monitor - Nicht verbunden";
       FormClosing += FormMain_FormClosing;
       PnFooter.ResumeLayout(false);
       PnHeader.ResumeLayout(false);

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 namespace WpfApp
@@ -13,5 +9,9 @@ namespace WpfApp
   /// </summary>
   public partial class App : Application
   {
+    internal static void HandleException(Exception ex, [CallerMemberName] string sender = "")
+    {
+      MessageBox.Show(ex.ToString(), $"Ausnahme in {sender}", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
   }
 }

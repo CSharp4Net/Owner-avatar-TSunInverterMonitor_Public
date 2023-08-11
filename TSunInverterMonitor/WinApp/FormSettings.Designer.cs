@@ -44,8 +44,8 @@
       BtnAbort = new Button();
       CkAutoLogin = new CheckBox();
       groupBox3 = new GroupBox();
-      CkAutoMaximize = new CheckBox();
       CkAutoSyncService = new CheckBox();
+      CkAutoMaximize = new CheckBox();
       groupBox1.SuspendLayout();
       groupBox2.SuspendLayout();
       panel1.SuspendLayout();
@@ -209,16 +209,6 @@
       groupBox3.TabStop = false;
       groupBox3.Text = "Allgemeines";
       // 
-      // CkAutoMaximize
-      // 
-      CkAutoMaximize.AutoSize = true;
-      CkAutoMaximize.Location = new Point(6, 47);
-      CkAutoMaximize.Name = "CkAutoMaximize";
-      CkAutoMaximize.Size = new Size(371, 19);
-      CkAutoMaximize.TabIndex = 3;
-      CkAutoMaximize.Text = "Automatisches Maximieren der Anwendung nach Programmstart";
-      CkAutoMaximize.UseVisualStyleBackColor = true;
-      // 
       // CkAutoSyncService
       // 
       CkAutoSyncService.AutoSize = true;
@@ -228,6 +218,16 @@
       CkAutoSyncService.TabIndex = 4;
       CkAutoSyncService.Text = "Automatisches Synchroniseren aller 5 Minuten, wenn angemeldet";
       CkAutoSyncService.UseVisualStyleBackColor = true;
+      // 
+      // CkAutoMaximize
+      // 
+      CkAutoMaximize.AutoSize = true;
+      CkAutoMaximize.Location = new Point(6, 47);
+      CkAutoMaximize.Name = "CkAutoMaximize";
+      CkAutoMaximize.Size = new Size(371, 19);
+      CkAutoMaximize.TabIndex = 3;
+      CkAutoMaximize.Text = "Automatisches Maximieren der Anwendung nach Programmstart";
+      CkAutoMaximize.UseVisualStyleBackColor = true;
       // 
       // FormSettings
       // 
@@ -245,7 +245,7 @@
       MinimizeBox = false;
       Name = "FormSettings";
       StartPosition = FormStartPosition.CenterParent;
-      Text = "TSunInverterMonitor - Einstellungen";
+      Text = "T-SUN Inverter Monitor - Einstellungen";
       Load += FormSettings_Load;
       groupBox1.ResumeLayout(false);
       groupBox1.PerformLayout();

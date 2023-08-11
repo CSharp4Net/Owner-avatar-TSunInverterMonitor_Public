@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NZZ.TSIM.WpfApp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,21 @@ namespace WpfApp
     public MainWindow()
     {
       InitializeComponent();
+    }
+
+    private void BtnShowSettings_Click(object sender, RoutedEventArgs e)
+    {
+      try
+      {
+        var settingsWindow = new SettingsWindow();
+
+        settingsWindow.Owner = this;
+        settingsWindow.ShowDialog();
+      }
+      catch (Exception ex)
+      {
+        App.HandleException(ex);
+      }
     }
   }
 }
