@@ -179,21 +179,21 @@ namespace NZZ.TSIM.WinApp
 
         Station station = SelectedStation;
         AddListBoxLogEntry($"Lade Informationen zur Station '{station.Name}'...");
-        StationDetails? stationDetails = await Task.Run(() => ServiceConnection.GetStationDetails(station.Id));
+        DetailsOfSelectedStation = await Task.Run(() => ServiceConnection.GetStationDetails(station.Id));
 
-        if (stationDetails == null)
+        if (DetailsOfSelectedStation == null)
         {
           AddListBoxLogEntry("Kommunikation T-SUN fehlgeschlagen, bitte erneut versuchen!");
           return;
         }
 
-        station.TimeZone = stationDetails.TimeZone;
-        station.TimeZoneOffset = stationDetails.TimeZoneOffset;
+        station.TimeZone = DetailsOfSelectedStation.TimeZone;
+        station.TimeZoneOffset = DetailsOfSelectedStation.TimeZoneOffset;
 
-        SetStationDetails(stationDetails);
+        SetStationDetails(DetailsOfSelectedStation);
 
         if (AppSettings.History.Enabled)
-          HistoryBackup.SaveStationDetails(AppSettings.History.FolderPath, stationDetails);
+          HistoryBackup.SaveStationDetails(AppSettings.History.FolderPath, DetailsOfSelectedStation);
       }
       catch (Exception ex)
       {

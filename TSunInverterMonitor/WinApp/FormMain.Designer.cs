@@ -268,7 +268,7 @@
       label5.Name = "label5";
       label5.Size = new Size(80, 17);
       label5.TabIndex = 20;
-      label5.Text = "Historie:";
+      label5.Text = "Anzeige:";
       label5.TextAlign = ContentAlignment.TopRight;
       // 
       // BtnDayAfter

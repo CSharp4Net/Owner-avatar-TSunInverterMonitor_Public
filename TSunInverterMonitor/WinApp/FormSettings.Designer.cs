@@ -46,10 +46,22 @@
       groupBox3 = new GroupBox();
       CkAutoSyncService = new CheckBox();
       CkAutoMaximize = new CheckBox();
+      tabControl1 = new TabControl();
+      tabPage1 = new TabPage();
+      tabPage2 = new TabPage();
+      groupBox4 = new GroupBox();
+      DpDayChartVisibleAreaEnd = new DateTimePicker();
+      label4 = new Label();
+      label3 = new Label();
+      DpDayChartVisibleAreaBegin = new DateTimePicker();
       groupBox1.SuspendLayout();
       groupBox2.SuspendLayout();
       panel1.SuspendLayout();
       groupBox3.SuspendLayout();
+      tabControl1.SuspendLayout();
+      tabPage1.SuspendLayout();
+      tabPage2.SuspendLayout();
+      groupBox4.SuspendLayout();
       SuspendLayout();
       // 
       // groupBox1
@@ -59,9 +71,9 @@
       groupBox1.Controls.Add(TbServiceApiPattern);
       groupBox1.Controls.Add(TbServiceRootUrl);
       groupBox1.Controls.Add(label1);
-      groupBox1.Location = new Point(12, 12);
+      groupBox1.Location = new Point(6, 6);
       groupBox1.Name = "groupBox1";
-      groupBox1.Size = new Size(560, 82);
+      groupBox1.Size = new Size(564, 82);
       groupBox1.TabIndex = 0;
       groupBox1.TabStop = false;
       groupBox1.Text = "Dienstanbindung";
@@ -81,7 +93,7 @@
       TbServiceApiPattern.Location = new Point(106, 51);
       TbServiceApiPattern.Name = "TbServiceApiPattern";
       TbServiceApiPattern.PlaceholderText = "prod-api";
-      TbServiceApiPattern.Size = new Size(200, 23);
+      TbServiceApiPattern.Size = new Size(204, 23);
       TbServiceApiPattern.TabIndex = 2;
       // 
       // TbServiceRootUrl
@@ -90,7 +102,7 @@
       TbServiceRootUrl.Location = new Point(106, 22);
       TbServiceRootUrl.Name = "TbServiceRootUrl";
       TbServiceRootUrl.PlaceholderText = "Root-URL zur API, bspw.: https://www.talent-monitoring.com";
-      TbServiceRootUrl.Size = new Size(448, 23);
+      TbServiceRootUrl.Size = new Size(452, 23);
       TbServiceRootUrl.TabIndex = 1;
       // 
       // label1
@@ -109,9 +121,9 @@
       groupBox2.Controls.Add(label5);
       groupBox2.Controls.Add(CkHistoryBackupEnabled);
       groupBox2.Controls.Add(TbHistoryBackupFolderPath);
-      groupBox2.Location = new Point(12, 100);
+      groupBox2.Location = new Point(6, 94);
       groupBox2.Name = "groupBox2";
-      groupBox2.Size = new Size(560, 88);
+      groupBox2.Size = new Size(564, 88);
       groupBox2.TabIndex = 1;
       groupBox2.TabStop = false;
       groupBox2.Text = "Datenprotokoll";
@@ -119,7 +131,7 @@
       // BtnBrowse
       // 
       BtnBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnBrowse.Location = new Point(517, 49);
+      BtnBrowse.Location = new Point(521, 49);
       BtnBrowse.Name = "BtnBrowse";
       BtnBrowse.Size = new Size(37, 23);
       BtnBrowse.TabIndex = 9;
@@ -153,7 +165,7 @@
       TbHistoryBackupFolderPath.Location = new Point(106, 49);
       TbHistoryBackupFolderPath.Name = "TbHistoryBackupFolderPath";
       TbHistoryBackupFolderPath.PlaceholderText = "Verzeichnispfad zur Ablage ihrer T-SUN Leistungsdaten";
-      TbHistoryBackupFolderPath.Size = new Size(405, 23);
+      TbHistoryBackupFolderPath.Size = new Size(409, 23);
       TbHistoryBackupFolderPath.TabIndex = 0;
       // 
       // panel1
@@ -161,7 +173,7 @@
       panel1.Controls.Add(BtnSave);
       panel1.Controls.Add(BtnAbort);
       panel1.Dock = DockStyle.Bottom;
-      panel1.Location = new Point(0, 311);
+      panel1.Location = new Point(0, 385);
       panel1.Name = "panel1";
       panel1.Size = new Size(584, 50);
       panel1.TabIndex = 2;
@@ -199,15 +211,16 @@
       // 
       // groupBox3
       // 
+      groupBox3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       groupBox3.Controls.Add(CkAutoSyncService);
       groupBox3.Controls.Add(CkAutoMaximize);
       groupBox3.Controls.Add(CkAutoLogin);
-      groupBox3.Location = new Point(12, 194);
+      groupBox3.Location = new Point(6, 188);
       groupBox3.Name = "groupBox3";
       groupBox3.Size = new Size(560, 100);
       groupBox3.TabIndex = 3;
       groupBox3.TabStop = false;
-      groupBox3.Text = "Allgemeines";
+      groupBox3.Text = "Automatisierung";
       // 
       // CkAutoSyncService
       // 
@@ -229,16 +242,101 @@
       CkAutoMaximize.Text = "Automatisches Maximieren der Anwendung nach Programmstart";
       CkAutoMaximize.UseVisualStyleBackColor = true;
       // 
+      // tabControl1
+      // 
+      tabControl1.Controls.Add(tabPage1);
+      tabControl1.Controls.Add(tabPage2);
+      tabControl1.Dock = DockStyle.Fill;
+      tabControl1.Location = new Point(0, 0);
+      tabControl1.Name = "tabControl1";
+      tabControl1.SelectedIndex = 0;
+      tabControl1.Size = new Size(584, 385);
+      tabControl1.TabIndex = 4;
+      // 
+      // tabPage1
+      // 
+      tabPage1.Controls.Add(groupBox1);
+      tabPage1.Controls.Add(groupBox3);
+      tabPage1.Controls.Add(groupBox2);
+      tabPage1.Location = new Point(4, 24);
+      tabPage1.Name = "tabPage1";
+      tabPage1.Padding = new Padding(3);
+      tabPage1.Size = new Size(576, 357);
+      tabPage1.TabIndex = 0;
+      tabPage1.Text = "Allgemeines";
+      tabPage1.UseVisualStyleBackColor = true;
+      // 
+      // tabPage2
+      // 
+      tabPage2.Controls.Add(groupBox4);
+      tabPage2.Location = new Point(4, 24);
+      tabPage2.Name = "tabPage2";
+      tabPage2.Padding = new Padding(3);
+      tabPage2.Size = new Size(576, 357);
+      tabPage2.TabIndex = 1;
+      tabPage2.Text = "Charts";
+      tabPage2.UseVisualStyleBackColor = true;
+      // 
+      // groupBox4
+      // 
+      groupBox4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      groupBox4.Controls.Add(DpDayChartVisibleAreaBegin);
+      groupBox4.Controls.Add(DpDayChartVisibleAreaEnd);
+      groupBox4.Controls.Add(label4);
+      groupBox4.Controls.Add(label3);
+      groupBox4.Location = new Point(8, 6);
+      groupBox4.Name = "groupBox4";
+      groupBox4.Size = new Size(560, 100);
+      groupBox4.TabIndex = 0;
+      groupBox4.TabStop = false;
+      groupBox4.Text = "Tages-Diagramm";
+      // 
+      // DpDayChartVisibleAreaEnd
+      // 
+      DpDayChartVisibleAreaEnd.CustomFormat = "HH:mm";
+      DpDayChartVisibleAreaEnd.Format = DateTimePickerFormat.Custom;
+      DpDayChartVisibleAreaEnd.Location = new Point(214, 22);
+      DpDayChartVisibleAreaEnd.Name = "DpDayChartVisibleAreaEnd";
+      DpDayChartVisibleAreaEnd.ShowUpDown = true;
+      DpDayChartVisibleAreaEnd.Size = new Size(50, 23);
+      DpDayChartVisibleAreaEnd.TabIndex = 4;
+      // 
+      // label4
+      // 
+      label4.AutoSize = true;
+      label4.Location = new Point(186, 25);
+      label4.Name = "label4";
+      label4.Size = new Size(22, 15);
+      label4.TabIndex = 3;
+      label4.Text = "bis";
+      // 
+      // label3
+      // 
+      label3.AutoSize = true;
+      label3.Location = new Point(6, 25);
+      label3.Name = "label3";
+      label3.Size = new Size(111, 15);
+      label3.TabIndex = 0;
+      label3.Text = "Sichtbarer Zeitraum";
+      // 
+      // DpDayChartVisibleAreaBegin
+      // 
+      DpDayChartVisibleAreaBegin.CustomFormat = "HH:mm";
+      DpDayChartVisibleAreaBegin.Format = DateTimePickerFormat.Custom;
+      DpDayChartVisibleAreaBegin.Location = new Point(130, 22);
+      DpDayChartVisibleAreaBegin.Name = "DpDayChartVisibleAreaBegin";
+      DpDayChartVisibleAreaBegin.ShowUpDown = true;
+      DpDayChartVisibleAreaBegin.Size = new Size(50, 23);
+      DpDayChartVisibleAreaBegin.TabIndex = 5;
+      // 
       // FormSettings
       // 
       AcceptButton = BtnSave;
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(584, 361);
-      Controls.Add(groupBox3);
+      ClientSize = new Size(584, 435);
+      Controls.Add(tabControl1);
       Controls.Add(panel1);
-      Controls.Add(groupBox2);
-      Controls.Add(groupBox1);
       FormBorderStyle = FormBorderStyle.FixedSingle;
       Icon = (Icon)resources.GetObject("$this.Icon");
       MaximizeBox = false;
@@ -254,6 +352,11 @@
       panel1.ResumeLayout(false);
       groupBox3.ResumeLayout(false);
       groupBox3.PerformLayout();
+      tabControl1.ResumeLayout(false);
+      tabPage1.ResumeLayout(false);
+      tabPage2.ResumeLayout(false);
+      groupBox4.ResumeLayout(false);
+      groupBox4.PerformLayout();
       ResumeLayout(false);
     }
 
@@ -279,5 +382,12 @@
     private GroupBox groupBox3;
     private CheckBox CkAutoMaximize;
     private CheckBox CkAutoSyncService;
+    private TabControl tabControl1;
+    private TabPage tabPage1;
+    private TabPage tabPage2;
+    private GroupBox groupBox4;
+    private Label label3;
+    private DateTimePicker DpDayChartVisibleAreaEnd;
+    private DateTimePicker DpDayChartVisibleAreaBegin;
   }
 }

@@ -176,7 +176,11 @@ namespace NZZ.TSIM.Service
       if (result == null)
       {
         logger.LogWarning($"Stations aggregation data result is empty or missing!");
-        return null;
+
+        result = new StationAggregationDay();
+        FillPeaksOfDayWithEmptyEntries(result.Peaks, date);
+
+        return result;
       }
 
       // Tages-Einzelwerte abrufen
@@ -192,6 +196,7 @@ namespace NZZ.TSIM.Service
       var peaksResponse = await HttpContentToObject<StationAggregationPeaksResponse<StationAggregationDayPeaks>>(message.Content)!;
 
       result.Peaks = peaksResponse!.Data!;
+      FillPeaksOfDayWithEmptyEntries(result.Peaks, date);
 
       return result;
     }
@@ -244,7 +249,7 @@ namespace NZZ.TSIM.Service
     {
       string contentText = await content.ReadAsStringAsync();
       try
-      {       
+      {
         return JsonSerializer.Deserialize<T>(contentText);
       }
       catch (Exception ex)
@@ -252,6 +257,62 @@ namespace NZZ.TSIM.Service
         logger.LogError($"Error while parse content: {contentText}");
         logger.LogException(ex);
         return default;
+      }
+    }
+
+    private void FillPeaksOfDayWithEmptyEntries(StationAggregationDayPeaks peaks, DateTime date)
+    {
+      ChartEntry? firstEntry = peaks.ChartEntries.FirstOrDefault();
+
+      // Laut aktuellen Test liefert die Tagesauswertung immer im 15-Minuten-Abstand Daten, wobei
+      // anscheinend immer nur für folgende Zeitpunkte Daten geliefert werden
+      // 10:04, 10:19, 10:34, 10:49: 11:04, 11:19: 11:34, 11:49, 12:04, usw....
+      DateTime firstTimeOfDay = new DateTime(date.Year, date.Month, date.Day, 0, 4, 0);
+      DateTime lastTimeOfDay = new DateTime(date.Year, date.Month, date.Day, 23, 49, 0);
+
+      if (firstEntry == null)
+      {
+        // Keine Daten für gewählten Tag enthalten
+        DateTime timeOfDay = firstTimeOfDay;
+        while (timeOfDay < lastTimeOfDay)
+        {
+          peaks.ChartEntries.Add(new ChartEntry
+          {
+            PeakPower = 0D,
+            PointOfTime = timeOfDay
+          });
+
+          timeOfDay = timeOfDay.AddMinutes(15);
+        }
+      }
+      else
+      {
+        // Von Beginn des Tages bis zum ersten Eintrag auffüllen
+        DateTime timeOfDay = firstTimeOfDay;
+        while (timeOfDay < firstEntry.PointOfTime)
+        {
+          int indexOfFirstEntry = peaks.ChartEntries.IndexOf(firstEntry);
+          peaks.ChartEntries.Insert(indexOfFirstEntry, new ChartEntry
+          {
+            PeakPower = 0D,
+            PointOfTime = timeOfDay
+          });
+
+          timeOfDay = timeOfDay.AddMinutes(15);
+        }
+
+        // Vom letzten Eintrag bis zum Ende des Tages auffüllen
+        timeOfDay = peaks.ChartEntries.Last().PointOfTime;
+        while (timeOfDay < lastTimeOfDay)
+        {
+          peaks.ChartEntries.Add(new ChartEntry
+          {
+            PeakPower = 0D,
+            PointOfTime = timeOfDay
+          });
+
+          timeOfDay = timeOfDay.AddMinutes(15);
+        }
       }
     }
   }

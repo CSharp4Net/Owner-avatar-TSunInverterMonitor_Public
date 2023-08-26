@@ -32,6 +32,9 @@ namespace NZZ.TSIM.WinApp
         CkAutoLogin.Checked = AppSettings.AutoLoginAfterStart;
         CkAutoMaximize.Checked = AppSettings.AutoMaximizeAfterStart;
         CkAutoSyncService.Checked = AppSettings.AutoSyncAfterLogin;
+
+        DpDayChartVisibleAreaBegin.Value = DateTime.Today + AppSettings.Charts.DayChart.VisibleAreaBegin;
+        DpDayChartVisibleAreaEnd.Value = DateTime.Today + AppSettings.Charts.DayChart.VisibleAreaEnd;
       }
       catch (Exception ex)
       {
@@ -63,6 +66,9 @@ namespace NZZ.TSIM.WinApp
         AppSettings.AutoLoginAfterStart = CkAutoLogin.Checked;
         AppSettings.AutoMaximizeAfterStart = CkAutoMaximize.Checked;
         AppSettings.AutoSyncAfterLogin = CkAutoSyncService.Checked;
+
+        AppSettings.Charts.DayChart.VisibleAreaBegin = DpDayChartVisibleAreaBegin.Value.TimeOfDay;
+        AppSettings.Charts.DayChart.VisibleAreaEnd = DpDayChartVisibleAreaEnd.Value.TimeOfDay;
 
         ConfigFile.SaveSettings(AppSettings);
 

@@ -1,27 +1,11 @@
-﻿using Microsoft.VisualBasic;
-using NZZ.TSIM.Contracts.Models;
+﻿using NZZ.TSIM.Contracts.Models;
 using NZZ.TSIM.Service;
 using NZZ.TSIM.WinApp.Internal.Models;
 using NZZ.TSIM.WinApp.Models;
 using NZZ.TSIM.WinApp.Statics;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Drawing;
-using System.Globalization;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks.Sources;
-using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using System.Xml.Linq;
-using static System.Collections.Specialized.BitVector32;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace NZZ.TSIM.WinApp
 {
@@ -44,6 +28,7 @@ namespace NZZ.TSIM.WinApp
 
     private ObservableCollection<Station>? Stations { get; set; }
     private Station? SelectedStation => (Station)CbStations.SelectedItem;
+    private StationDetails? DetailsOfSelectedStation { get; set; }
 
     private ObservableCollection<HistoryType> HistoryTypes { get; set; }
     private HistoryType? SelectedHistoryType => (HistoryType)CbHistoryType.SelectedItem;
@@ -119,7 +104,7 @@ namespace NZZ.TSIM.WinApp
       if (data == null)
       {
         // Versuche Daten von Service zu laden
-        AddListBoxLogEntry($"Lade Daten für den {date.ToLongDateString()}...");
+        AddListBoxLogEntry($"Lade Daten für {date.ToLongDateString()}...");
         data = await Task.Run(() => ServiceConnection.GetStationAggregationOfDay(station, date));
 
         if (data == null)
@@ -136,8 +121,8 @@ namespace NZZ.TSIM.WinApp
 
       ChartArea area = ChHistory.ChartAreas.Add("Default");
       area.AxisX.IntervalType = DateTimeIntervalType.Minutes;
-      area.AxisX.Interval = 1;
-      area.AxisY.Maximum = 600D;
+      area.AxisX.Interval = 30;
+      area.AxisY.Maximum = DetailsOfSelectedStation?.InstalledCapacity ?? 600D;
 
       Series series = ChHistory.Series.Add("Default");
       series.ChartArea = "Default";
@@ -145,27 +130,37 @@ namespace NZZ.TSIM.WinApp
       series.XValueType = ChartValueType.Time;
       series.YValueType = ChartValueType.Double;
       series.Enabled = true;
-      series.ChartType = SeriesChartType.Area;
+      series.ChartType = Enum.Parse<SeriesChartType>(AppSettings.Charts.DayChart.SeriesChartTypeName);
       series.BackGradientStyle = GradientStyle.TopBottom;
       series.BorderWidth = 2;
       series.IsXValueIndexed = true;
       series.IsValueShownAsLabel = true;
       series.BorderColor = Color.RoyalBlue;
       series.LabelForeColor = Color.RoyalBlue;
+      series.LabelBackColor = Color.White;
+      series.LabelBorderColor = Color.RoyalBlue;
       series.ShadowColor = Color.Empty;
       series.MarkerColor = Color.Navy;
       series.MarkerStyle = MarkerStyle.Diamond;
       series.MarkerSize = 5;
 
-      // Echtdaten
+      DateTime beginOfDay = BuildTimeStamp(date, AppSettings.Charts.DayChart.VisibleAreaBegin);
+      DateTime endOfDay = BuildTimeStamp(date, AppSettings.Charts.DayChart.VisibleAreaEnd);
+
       foreach (var item in data.Peaks.ChartEntries)
       {
+        if (item.PointOfTime < beginOfDay || item.PointOfTime > endOfDay)
+          continue;
+
         double value = Math.Round(item.PeakPower);
         var point = new DataPoint();
         point.SetValueXY(item.PointOfTime, value);
-        point.ToolTip = string.Format("{0} - {1}W", item.PointOfTime.ToShortTimeString(), value);
+        //point.ToolTip = string.Format("{0} - {1}W", item.PointOfTime.ToShortTimeString(), value);
         series.Points.Add(point);
       }
+
+      static DateTime BuildTimeStamp(DateTime originDateOfDay, TimeSpan timeToSet)
+        => new DateTime(originDateOfDay.Year, originDateOfDay.Month, originDateOfDay.Day, timeToSet.Hours, timeToSet.Minutes, 0);
     }
 
     private async Task LoadStationHistoryOfMonth(string stationGuid, DateTime date, bool onlyDataFromService)
@@ -175,7 +170,7 @@ namespace NZZ.TSIM.WinApp
 
       StationAggregationMonth? data = null;
 
-      if (AppSettings.History.Enabled && date < DateTime.Today)
+      if (!onlyDataFromService && AppSettings.History.Enabled && date < DateTime.Today)
         // Versuche Daten aus Backup zu laden
         data = HistoryBackup.GetAggregationOfMonth(AppSettings.History.FolderPath, stationGuid, date);
 
@@ -215,6 +210,8 @@ namespace NZZ.TSIM.WinApp
       series.IsValueShownAsLabel = true;
       series.BorderColor = Color.RoyalBlue;
       series.LabelForeColor = Color.RoyalBlue;
+      series.LabelBackColor = Color.White;
+      series.LabelBorderColor = Color.RoyalBlue;
       series.ShadowColor = Color.Empty;
       series.MarkerColor = Color.Navy;
       series.MarkerStyle = MarkerStyle.Diamond;
@@ -292,7 +289,7 @@ namespace NZZ.TSIM.WinApp
 
       StationAggregationYear? data = null;
 
-      if (AppSettings.History.Enabled && date < DateTime.Today)
+      if (!onlyDataFromService && AppSettings.History.Enabled && date < DateTime.Today)
         // Versuche Daten aus Backup zu laden
         data = HistoryBackup.GetAggregationOfYear(AppSettings.History.FolderPath, stationGuid, date);
 
@@ -332,6 +329,8 @@ namespace NZZ.TSIM.WinApp
       series.IsValueShownAsLabel = true;
       series.BorderColor = Color.RoyalBlue;
       series.LabelForeColor = Color.RoyalBlue;
+      series.LabelBackColor = Color.White;
+      series.LabelBorderColor = Color.RoyalBlue;
       series.ShadowColor = Color.Empty;
       series.MarkerColor = Color.Navy;
       series.MarkerStyle = MarkerStyle.Diamond;

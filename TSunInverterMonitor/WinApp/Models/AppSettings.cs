@@ -10,5 +10,6 @@ namespace NZZ.TSIM.WinApp.Models
 
     public ServiceSettings Service { get; set; } = new ServiceSettings();
     public HistorySettings History { get; set; } = new HistorySettings();
+    public ChartSettings Charts { get; set; } = new ChartSettings();
   }
 }
