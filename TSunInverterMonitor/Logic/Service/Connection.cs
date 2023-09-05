@@ -264,11 +264,9 @@ namespace NZZ.TSIM.Service
     {
       ChartEntry? firstEntry = peaks.ChartEntries.FirstOrDefault();
 
-      // Laut aktuellen Test liefert die Tagesauswertung immer im 15-Minuten-Abstand Daten, wobei
-      // anscheinend immer nur für folgende Zeitpunkte Daten geliefert werden
-      // 10:04, 10:19, 10:34, 10:49: 11:04, 11:19: 11:34, 11:49, 12:04, usw....
-      DateTime firstTimeOfDay = new DateTime(date.Year, date.Month, date.Day, 0, 4, 0);
-      DateTime lastTimeOfDay = new DateTime(date.Year, date.Month, date.Day, 23, 49, 0);
+      // Laut aktuellen Test liefert die Tagesauswertung immer im 15-Minuten-Abstand Daten
+      DateTime firstTimeOfDay = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0);
+      DateTime lastTimeOfDay = new DateTime(date.Year, date.Month, date.Day, 23, 59, 0);
 
       if (firstEntry == null)
       {
@@ -287,21 +285,20 @@ namespace NZZ.TSIM.Service
       }
       else
       {
-        // Von Beginn des Tages bis zum ersten Eintrag auffüllen
-        DateTime timeOfDay = firstTimeOfDay;
-        while (timeOfDay < firstEntry.PointOfTime)
+        // Vom ersten Eintrag bis 0 Uhr auffüllen
+        DateTime timeOfDay = firstEntry.PointOfTime.AddMinutes(-15);
+        while (timeOfDay >= firstTimeOfDay)
         {
-          int indexOfFirstEntry = peaks.ChartEntries.IndexOf(firstEntry);
-          peaks.ChartEntries.Insert(indexOfFirstEntry, new ChartEntry
+          peaks.ChartEntries.Insert(0, new ChartEntry
           {
             PeakPower = 0D,
             PointOfTime = timeOfDay
           });
 
-          timeOfDay = timeOfDay.AddMinutes(15);
+          timeOfDay = timeOfDay.AddMinutes(-15);
         }
 
-        // Vom letzten Eintrag bis zum Ende des Tages auffüllen
+        // Vom letzten Eintrag bis 24 Uhr auffüllen
         timeOfDay = peaks.ChartEntries.Last().PointOfTime;
         while (timeOfDay < lastTimeOfDay)
         {

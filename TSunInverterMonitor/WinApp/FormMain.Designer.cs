@@ -83,6 +83,7 @@
       CbStations = new ComboBox();
       label8 = new Label();
       TmAutoSync = new System.Windows.Forms.Timer(components);
+      iconButton1 = new FontAwesome.Sharp.IconButton();
       PnFooter.SuspendLayout();
       PnHeader.SuspendLayout();
       PnBody.SuspendLayout();
@@ -115,6 +116,7 @@
       // PnHeader
       // 
       PnHeader.BorderStyle = BorderStyle.FixedSingle;
+      PnHeader.Controls.Add(iconButton1);
       PnHeader.Controls.Add(BtnOpenWorkFolder);
       PnHeader.Controls.Add(BtnDebug);
       PnHeader.Controls.Add(TbServicePassword);
@@ -653,6 +655,17 @@
       TmAutoSync.Interval = 300000;
       TmAutoSync.Tick += TmAutoSync_Tick;
       // 
+      // iconButton1
+      // 
+      iconButton1.IconChar = FontAwesome.Sharp.IconChar.Gears;
+      iconButton1.IconColor = Color.Black;
+      iconButton1.IconFont = FontAwesome.Sharp.IconFont.Auto;
+      iconButton1.Location = new Point(834, 13);
+      iconButton1.Name = "iconButton1";
+      iconButton1.Size = new Size(75, 54);
+      iconButton1.TabIndex = 8;
+      iconButton1.UseVisualStyleBackColor = true;
+      // 
       // FormMain
       // 
       AutoScaleDimensions = new SizeF(7F, 17F);
@@ -731,5 +744,6 @@
     private Button BtnReloadHistory;
     private Button BtnOpenHistoryFolder;
     private System.Windows.Forms.Timer TmAutoSync;
+    private FontAwesome.Sharp.IconButton iconButton1;
   }
 }

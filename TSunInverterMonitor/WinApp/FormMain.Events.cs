@@ -365,6 +365,9 @@ namespace NZZ.TSIM.WinApp
     private void TmAutoSync_Tick(object sender, EventArgs e)
     {
       BtnRefresh_Click(sender, e);
+
+      if (DpHistoryDate.Value >= DateTime.Today)
+        BtnReloadHistory_Click(sender, e);
     }
   }
 }
