@@ -11,6 +11,14 @@ Die Lösung enthält eine .NET-Solution, unterteilt in mehrere C#-Projekte.
 * [Details einer Station abrufen](#Details-einer-Station-abrufen)
 * [Historie einer Station abrufen](#Historie-einer-Station-abrufen)
 
+Als UI beinhaltet die Lösung
+1. Eine Winform-Anwendung (Funktional und einsatzbereit)
+2. Eine WPF-Lösung (begonnen, aber nicht funktional)
+3. Eine MAUI-Lösung (angedacht)
+
+Die Logik zur Kommunikation mit T-SUN ist in das C#-Projekt Service ausgelagert.
+Nachfolgend werden die Funktionen zur Verwendung dieser Logik beschrieben.
+
 ### Login & Logout
 ```
 IConnection connection = new Connection();
