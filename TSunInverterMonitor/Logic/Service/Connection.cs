@@ -119,7 +119,7 @@ namespace NZZ.TSIM.Service
     public async Task<List<Station>?> GetStations()
     {
       logger.LogInfo($"GET all stations");
-      HttpResponseMessage message = await client!.GetAsync($"{settings!.ApiPattern}/system/station/listWithoutPagingForMap");
+      HttpResponseMessage message = await client!.GetAsync($"{settings!.ApiPattern}/system/station/list");
 
       if (message.StatusCode != System.Net.HttpStatusCode.OK)
       {
@@ -129,7 +129,7 @@ namespace NZZ.TSIM.Service
 
       var response = await HttpContentToObject<StationsResponse>(message.Content);
 
-      return response.Stations;
+      return response.Rows;
     }
 
     public async Task<StationDetails?> GetStationDetails(int stationId)

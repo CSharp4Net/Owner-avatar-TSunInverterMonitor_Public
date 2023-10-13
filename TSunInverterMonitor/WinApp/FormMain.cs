@@ -273,7 +273,7 @@ namespace NZZ.TSIM.WinApp
       else if (dayEnergy.EndsWith("Wh") && value > 0)
       {
         // Wh rechnen wir um in kWh, daher durch 100 dividieren
-        value = Math.Round(value / 100, 2);
+        value = Math.Round(value / 1000, 2);
       }
 
 

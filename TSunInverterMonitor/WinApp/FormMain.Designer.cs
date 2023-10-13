@@ -35,13 +35,11 @@
       PnFooter = new Panel();
       LbLog = new ListBox();
       PnHeader = new Panel();
-      BtnOpenWorkFolder = new Button();
-      BtnDebug = new Button();
+      BtnOpenSettings = new FontAwesome.Sharp.IconButton();
       TbServicePassword = new TextBox();
       label2 = new Label();
       TbServiceUserName = new TextBox();
       label1 = new Label();
-      BtnOpenSettings = new Button();
       BtnConnect = new Button();
       PnBody = new Panel();
       ChHistory = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -83,7 +81,7 @@
       CbStations = new ComboBox();
       label8 = new Label();
       TmAutoSync = new System.Windows.Forms.Timer(components);
-      iconButton1 = new FontAwesome.Sharp.IconButton();
+      BtnOpenWorkFolder = new FontAwesome.Sharp.IconButton();
       PnFooter.SuspendLayout();
       PnHeader.SuspendLayout();
       PnBody.SuspendLayout();
@@ -116,14 +114,12 @@
       // PnHeader
       // 
       PnHeader.BorderStyle = BorderStyle.FixedSingle;
-      PnHeader.Controls.Add(iconButton1);
       PnHeader.Controls.Add(BtnOpenWorkFolder);
-      PnHeader.Controls.Add(BtnDebug);
+      PnHeader.Controls.Add(BtnOpenSettings);
       PnHeader.Controls.Add(TbServicePassword);
       PnHeader.Controls.Add(label2);
       PnHeader.Controls.Add(TbServiceUserName);
       PnHeader.Controls.Add(label1);
-      PnHeader.Controls.Add(BtnOpenSettings);
       PnHeader.Controls.Add(BtnConnect);
       PnHeader.Dock = DockStyle.Top;
       PnHeader.Location = new Point(0, 0);
@@ -131,28 +127,19 @@
       PnHeader.Size = new Size(1184, 80);
       PnHeader.TabIndex = 2;
       // 
-      // BtnOpenWorkFolder
+      // BtnOpenSettings
       // 
-      BtnOpenWorkFolder.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnOpenWorkFolder.Location = new Point(1021, 42);
-      BtnOpenWorkFolder.Name = "BtnOpenWorkFolder";
-      BtnOpenWorkFolder.Size = new Size(150, 25);
-      BtnOpenWorkFolder.TabIndex = 7;
-      BtnOpenWorkFolder.Text = "Arbeitsverzeichnis ...";
-      BtnOpenWorkFolder.UseVisualStyleBackColor = true;
-      BtnOpenWorkFolder.Click += BtnOpenWorkFolder_Click;
-      // 
-      // BtnDebug
-      // 
-      BtnDebug.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnDebug.Location = new Point(915, 11);
-      BtnDebug.Name = "BtnDebug";
-      BtnDebug.Size = new Size(100, 56);
-      BtnDebug.TabIndex = 6;
-      BtnDebug.Text = "DEBUG";
-      BtnDebug.UseVisualStyleBackColor = true;
-      BtnDebug.Visible = false;
-      BtnDebug.Click += BtnDebug_Click;
+      BtnOpenSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      BtnOpenSettings.IconChar = FontAwesome.Sharp.IconChar.Gears;
+      BtnOpenSettings.IconColor = Color.RoyalBlue;
+      BtnOpenSettings.IconFont = FontAwesome.Sharp.IconFont.Auto;
+      BtnOpenSettings.Location = new Point(1057, 11);
+      BtnOpenSettings.Name = "BtnOpenSettings";
+      BtnOpenSettings.Size = new Size(54, 54);
+      BtnOpenSettings.TabIndex = 8;
+      BtnOpenSettings.Tag = "";
+      BtnOpenSettings.UseVisualStyleBackColor = true;
+      BtnOpenSettings.Click += BtnOpenSettings_Click;
       // 
       // TbServicePassword
       // 
@@ -188,17 +175,6 @@
       label1.Size = new Size(45, 17);
       label1.TabIndex = 1;
       label1.Text = "E-Mail";
-      // 
-      // BtnOpenSettings
-      // 
-      BtnOpenSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      BtnOpenSettings.Location = new Point(1021, 11);
-      BtnOpenSettings.Name = "BtnOpenSettings";
-      BtnOpenSettings.Size = new Size(150, 25);
-      BtnOpenSettings.TabIndex = 0;
-      BtnOpenSettings.Text = "Einstellungen";
-      BtnOpenSettings.UseVisualStyleBackColor = true;
-      BtnOpenSettings.Click += BtnOpenSettings_Click;
       // 
       // BtnConnect
       // 
@@ -655,16 +631,19 @@
       TmAutoSync.Interval = 300000;
       TmAutoSync.Tick += TmAutoSync_Tick;
       // 
-      // iconButton1
+      // BtnOpenWorkFolder
       // 
-      iconButton1.IconChar = FontAwesome.Sharp.IconChar.Gears;
-      iconButton1.IconColor = Color.Black;
-      iconButton1.IconFont = FontAwesome.Sharp.IconFont.Auto;
-      iconButton1.Location = new Point(834, 13);
-      iconButton1.Name = "iconButton1";
-      iconButton1.Size = new Size(75, 54);
-      iconButton1.TabIndex = 8;
-      iconButton1.UseVisualStyleBackColor = true;
+      BtnOpenWorkFolder.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      BtnOpenWorkFolder.IconChar = FontAwesome.Sharp.IconChar.Briefcase;
+      BtnOpenWorkFolder.IconColor = Color.RoyalBlue;
+      BtnOpenWorkFolder.IconFont = FontAwesome.Sharp.IconFont.Auto;
+      BtnOpenWorkFolder.Location = new Point(1117, 11);
+      BtnOpenWorkFolder.Name = "BtnOpenWorkFolder";
+      BtnOpenWorkFolder.Size = new Size(54, 54);
+      BtnOpenWorkFolder.TabIndex = 9;
+      BtnOpenWorkFolder.Tag = "";
+      BtnOpenWorkFolder.UseVisualStyleBackColor = true;
+      BtnOpenWorkFolder.Click += this.BtnOpenWorkFolder_Click;
       // 
       // FormMain
       // 
@@ -695,7 +674,6 @@
     #endregion
     private Panel PnFooter;
     private Panel PnHeader;
-    private Button BtnOpenSettings;
     private Panel PnBody;
     private TextBox TbServicePassword;
     private Label label2;
@@ -707,7 +685,6 @@
     private Label label4;
     private Button BtnRefresh;
     private Button BtnDisconnect;
-    private Button BtnDebug;
     private Label LbStationTimeStamp;
     private Label label14;
     private Label LbStationTodayPeakPower;
@@ -736,7 +713,6 @@
     private Label LbHistoryTotal;
     private ComboBox CbHistoryType;
     private Label label5;
-    private Button BtnOpenWorkFolder;
     private Label LbStationInstalledCapacity;
     private Label label17;
     private Label LbStationTimeZone;
@@ -744,6 +720,7 @@
     private Button BtnReloadHistory;
     private Button BtnOpenHistoryFolder;
     private System.Windows.Forms.Timer TmAutoSync;
-    private FontAwesome.Sharp.IconButton iconButton1;
+    private FontAwesome.Sharp.IconButton BtnOpenSettings;
+    private FontAwesome.Sharp.IconButton BtnOpenWorkFolder;
   }
 }
