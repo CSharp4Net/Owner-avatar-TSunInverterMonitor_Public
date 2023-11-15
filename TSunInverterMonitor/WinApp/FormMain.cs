@@ -4,6 +4,7 @@ using NZZ.TSIM.WinApp.Internal.Models;
 using NZZ.TSIM.WinApp.Models;
 using NZZ.TSIM.WinApp.Statics;
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -44,6 +45,43 @@ namespace NZZ.TSIM.WinApp
       }
     }
 
+    protected override void OnShown(EventArgs e)
+    {
+      base.OnShown(e);
+
+      try
+      {
+        IsBusy = true;
+
+        if (!Directory.Exists(AppDataPath.LogFolderPath))
+          Directory.CreateDirectory(AppDataPath.LogFolderPath);
+
+        AppSettings = ConfigFile.LoadSettings();
+        ServiceConnection = new Connection(AppSettings.Service, AppDataPath.LogFolderPath);
+
+        TbServiceUserName.Text = Properties.Settings.Default.LastUserName;
+
+        if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.LastPassword))
+          TbServicePassword.Text = Encoding.UTF8.GetString(Convert.FromBase64String(Properties.Settings.Default.LastPassword));
+
+        if (AppSettings.AutoMaximizeAfterStart)
+          this.WindowState = FormWindowState.Maximized;
+
+        if (AppSettings.AutoLoginAfterStart &&
+          !string.IsNullOrWhiteSpace(TbServiceUserName.Text) &&
+          !string.IsNullOrWhiteSpace(TbServicePassword.Text))
+          BtnConnect_Click(this, e);
+      }
+      catch (Exception ex)
+      {
+        Program.HandleException(ex);
+      }
+      finally
+      {
+        IsBusy = false;
+      }
+    }
+
     private void SetMaskByConnectionState()
     {
       if (ServiceConnection.Connected)
@@ -73,18 +111,12 @@ namespace NZZ.TSIM.WinApp
 
     private void SetStationDetails(StationDetails stationDetails)
     {
-      LbStationGuid.Text = stationDetails.Guid;
       LbStationAddress.Text = stationDetails.Location;
-      LbStationTimeZone.Text = stationDetails.TimeZone;
 
       LbStationTimeStamp.Text = $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
       LbStationActivePower.Text = stationDetails.ActivePowerNamed;
-      LbStationTodayPeakPower.Text = stationDetails.TodayPeakPowerNamed;
-      LbStationInstalledCapacity.Text = stationDetails.InstalledCapacityNamed;
 
-      LbStationCurrentDayEnergy.Text = stationDetails.CurrentDayEnergyNamed;
-      LbStationCurrentMonthEnergy.Text = stationDetails.CurrentMonthEnergyNamed;
-      LbStationCurrentYearEnergy.Text = stationDetails.CurrentYearEnergyNamed;
+      LbStationCurrentEnergy.Text = stationDetails.CurrentDayEnergyNamed;
       LbStationTotalEnergy.Text = stationDetails.TotalEnergyNamed;
 
       CbHistoryType.DataSource = HistoryTypes;
@@ -119,13 +151,13 @@ namespace NZZ.TSIM.WinApp
 
       LbHistoryTotal.Text = data.TotalEnergy;
 
-      ChartArea area = ChHistory.ChartAreas.Add("Default");
+      ChartArea area = ChHistory.ChartAreas.Add("Day");
       area.AxisX.IntervalType = DateTimeIntervalType.Minutes;
       area.AxisX.Interval = 30;
       area.AxisY.Maximum = DetailsOfSelectedStation?.InstalledCapacity ?? 600D;
 
-      Series series = ChHistory.Series.Add("Default");
-      series.ChartArea = "Default";
+      Series series = ChHistory.Series.Add("Day");
+      series.ChartArea = "Day";
       series.SetDefault(true);
       series.XValueType = ChartValueType.Time;
       series.YValueType = ChartValueType.Double;
@@ -168,37 +200,20 @@ namespace NZZ.TSIM.WinApp
       ChHistory.ChartAreas.Clear();
       ChHistory.Series.Clear();
 
-      StationAggregationMonth? data = null;
-
-      if (!onlyDataFromService && AppSettings.History.Enabled && date < DateTime.Today)
-        // Versuche Daten aus Backup zu laden
-        data = HistoryBackup.GetAggregationOfMonth(AppSettings.History.FolderPath, stationGuid, date);
+      StationAggregationMonth? data = await LoadStationAggregationOfMonth(stationGuid, date, onlyDataFromService);
 
       if (data == null)
-      {
-        // Versuche Daten von Service zu laden
-        AddListBoxLogEntry($"Lade Summen für {date.ToString("MMMM yyyy")}...");
-        data = await Task.Run(() => ServiceConnection.GetStationAggregationOfMonth(stationGuid, date.Year, date.Month));
-
-        if (data == null)
-        {
-          AddListBoxLogEntry("Kommunikation T-SUN fehlgeschlagen, bitte erneut versuchen!");
-          return;
-        }
-
-        if (AppSettings.History.Enabled)
-          HistoryBackup.SaveAggregation(AppSettings.History.FolderPath, stationGuid, data);
-      }
+        return;
 
       LbHistoryTotal.Text = data.TotalEnergy;
 
-      ChartArea area = ChHistory.ChartAreas.Add("Default");
+      ChartArea area = ChHistory.ChartAreas.Add("Month");
       area.AxisX.IntervalType = DateTimeIntervalType.Days;
       area.AxisX.Interval = 1;
       area.AxisX.LabelStyle = new LabelStyle() { Format = "dd" };
 
-      Series series = ChHistory.Series.Add("Default");
-      series.ChartArea = "Default";
+      Series series = ChHistory.Series.Add("Month");
+      series.ChartArea = "Month";
       series.SetDefault(true);
       series.XValueType = ChartValueType.Date;
       series.YValueType = ChartValueType.Double;
@@ -256,6 +271,58 @@ namespace NZZ.TSIM.WinApp
         series.Points.Add(CreateDataPointOfDay(date, data.DayEnergy31, nameof(data.DayEnergy31)));
     }
 
+    private async Task LoadStationHistoryOfYear(string stationGuid, DateTime date, bool onlyDataFromService)
+    {
+      ChHistory.ChartAreas.Clear();
+      ChHistory.Series.Clear();
+
+      StationAggregationYear? data = await LoadStationAggregationOfYear(stationGuid, date, onlyDataFromService);
+
+      if (data == null)
+        return;
+
+      LbHistoryTotal.Text = data.TotalEnergy;
+
+      ChartArea area = ChHistory.ChartAreas.Add("Year");
+      area.AxisX.IntervalType = DateTimeIntervalType.Months;
+      area.AxisX.Interval = 1;
+      area.AxisX.LabelStyle = new LabelStyle() { Format = "MMMM" };
+
+      Series series = ChHistory.Series.Add("Year");
+      series.ChartArea = "Year";
+      series.SetDefault(true);
+      series.XValueType = ChartValueType.Date;
+      series.YValueType = ChartValueType.Double;
+      series.Enabled = true;
+      series.ChartType = SeriesChartType.Column;
+      series.BackGradientStyle = GradientStyle.TopBottom;
+      series.BorderWidth = 2;
+      series.IsXValueIndexed = true;
+      series.IsValueShownAsLabel = true;
+      series.BorderColor = Color.RoyalBlue;
+      series.LabelForeColor = Color.RoyalBlue;
+      series.LabelBackColor = Color.White;
+      series.LabelBorderColor = Color.RoyalBlue;
+      series.ShadowColor = Color.Empty;
+      series.MarkerColor = Color.Navy;
+      series.MarkerStyle = MarkerStyle.Diamond;
+      series.MarkerSize = 10;
+
+      // Echtdaten
+      series.Points.Add(CreateDataPointOfMonth(date, data.MonthEnergy1, nameof(data.MonthEnergy1)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.MonthEnergy2, nameof(data.MonthEnergy2)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.MonthEnergy3, nameof(data.MonthEnergy3)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.MonthEnergy4, nameof(data.MonthEnergy4)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.MonthEnergy5, nameof(data.MonthEnergy5)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy6, nameof(data.DayEnergy6)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy7, nameof(data.DayEnergy7)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy8, nameof(data.DayEnergy8)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy9, nameof(data.DayEnergy9)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy10, nameof(data.DayEnergy10)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy11, nameof(data.DayEnergy11)));
+      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy12, nameof(data.DayEnergy12)));
+    }
+
     private DataPoint CreateDataPointOfDay(DateTime dateInMonth, string dayEnergy, string dayEnergyPropertyName)
     {
       var point = new DataPoint();
@@ -280,75 +347,6 @@ namespace NZZ.TSIM.WinApp
       point.SetValueXY(dateForValue, value);
       point.ToolTip = string.Format("{0} - {1}", dateForValue.ToShortDateString(), dayEnergy);
       return point;
-    }
-
-    private async Task LoadStationHistoryOfYear(string stationGuid, DateTime date, bool onlyDataFromService)
-    {
-      ChHistory.ChartAreas.Clear();
-      ChHistory.Series.Clear();
-
-      StationAggregationYear? data = null;
-
-      if (!onlyDataFromService && AppSettings.History.Enabled && date < DateTime.Today)
-        // Versuche Daten aus Backup zu laden
-        data = HistoryBackup.GetAggregationOfYear(AppSettings.History.FolderPath, stationGuid, date);
-
-      if (data == null)
-      {
-        // Versuche Daten von Service zu laden
-        AddListBoxLogEntry($"Lade Summen für {date.ToString("yyyy")}...");
-        data = await Task.Run(() => ServiceConnection.GetStationAggregationOfYear(stationGuid, date.Year));
-
-        if (data == null)
-        {
-          AddListBoxLogEntry("Kommunikation T-SUN fehlgeschlagen, bitte erneut versuchen!");
-          return;
-        }
-
-        if (AppSettings.History.Enabled)
-          HistoryBackup.SaveAggregation(AppSettings.History.FolderPath, stationGuid, data);
-      }
-
-      LbHistoryTotal.Text = data.TotalEnergy;
-
-      ChartArea area = ChHistory.ChartAreas.Add("Default");
-      area.AxisX.IntervalType = DateTimeIntervalType.Months;
-      area.AxisX.Interval = 1;
-      area.AxisX.LabelStyle = new LabelStyle() { Format = "MMMM" };
-
-      Series series = ChHistory.Series.Add("Default");
-      series.ChartArea = "Default";
-      series.SetDefault(true);
-      series.XValueType = ChartValueType.Date;
-      series.YValueType = ChartValueType.Double;
-      series.Enabled = true;
-      series.ChartType = SeriesChartType.Column;
-      series.BackGradientStyle = GradientStyle.TopBottom;
-      series.BorderWidth = 2;
-      series.IsXValueIndexed = true;
-      series.IsValueShownAsLabel = true;
-      series.BorderColor = Color.RoyalBlue;
-      series.LabelForeColor = Color.RoyalBlue;
-      series.LabelBackColor = Color.White;
-      series.LabelBorderColor = Color.RoyalBlue;
-      series.ShadowColor = Color.Empty;
-      series.MarkerColor = Color.Navy;
-      series.MarkerStyle = MarkerStyle.Diamond;
-      series.MarkerSize = 10;
-
-      // Echtdaten
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy1, nameof(data.DayEnergy1)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy2, nameof(data.DayEnergy2)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy3, nameof(data.DayEnergy3)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy4, nameof(data.DayEnergy4)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy5, nameof(data.DayEnergy5)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy6, nameof(data.DayEnergy6)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy7, nameof(data.DayEnergy7)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy8, nameof(data.DayEnergy8)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy9, nameof(data.DayEnergy9)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy10, nameof(data.DayEnergy10)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy11, nameof(data.DayEnergy11)));
-      series.Points.Add(CreateDataPointOfMonth(date, data.DayEnergy12, nameof(data.DayEnergy12)));
     }
 
     private DataPoint CreateDataPointOfMonth(DateTime dateInMonth, string dayEnergy, string dayEnergyPropertyName)
@@ -383,7 +381,7 @@ namespace NZZ.TSIM.WinApp
       LbLog.TopIndex = LbLog.Items.Count - 1;
     }
 
-    private async void LoadStationHistory(bool onlyDataFromService = false)
+    private async Task LoadStationHistory(bool onlyDataFromService = false)
     {
       if (SelectedStation == null || SelectedHistoryType == null)
         return;
@@ -402,6 +400,52 @@ namespace NZZ.TSIM.WinApp
           await LoadStationHistoryOfYear(SelectedStation.Guid, DpHistoryDate.Value, onlyDataFromService);
           break;
       }
+    }
+
+    private async Task<StationAggregationMonth?> LoadStationAggregationOfMonth(string stationGuid, DateTime date, bool onlyDataFromService)
+    {
+      StationAggregationMonth? result = null;
+
+      if (!onlyDataFromService && AppSettings.History.Enabled && (date.Year < DateTime.Today.Year || date.Month < DateTime.Today.Month))
+        // Versuche Daten aus Backup zu laden
+        result = HistoryBackup.GetAggregationOfMonth(AppSettings.History.FolderPath, stationGuid, date);
+
+      if (result == null)
+      {
+        // Versuche Daten von Service zu laden
+        AddListBoxLogEntry($"Lade Summen für {date.ToString("MMMM yyyy")}...");
+        result = await Task.Run(() => ServiceConnection.GetStationAggregationOfMonth(stationGuid, date.Year, date.Month));
+   
+        if (result == null)
+          AddListBoxLogEntry("Kommunikation T-SUN fehlgeschlagen, bitte erneut versuchen!");
+        else if (AppSettings.History.Enabled)
+          HistoryBackup.SaveAggregation(AppSettings.History.FolderPath, stationGuid, result);
+      }
+
+      return result;
+    }
+
+    private async Task<StationAggregationYear?> LoadStationAggregationOfYear(string stationGuid, DateTime date, bool onlyDataFromService)
+    {
+      StationAggregationYear? result = null;
+
+      if (!onlyDataFromService && AppSettings.History.Enabled && date.Year < DateTime.Today.Year)
+        // Versuche Daten aus Backup zu laden
+        result = HistoryBackup.GetAggregationOfYear(AppSettings.History.FolderPath, stationGuid, date);
+
+      if (result == null)
+      {
+        // Versuche Daten von Service zu laden
+        AddListBoxLogEntry($"Lade Summen für {date.ToString("yyyy")}...");
+        result = await Task.Run(() => ServiceConnection.GetStationAggregationOfYear(stationGuid, date.Year));
+
+        if (result == null)        
+          AddListBoxLogEntry("Kommunikation T-SUN fehlgeschlagen, bitte erneut versuchen!");
+        else  if (AppSettings.History.Enabled)
+          HistoryBackup.SaveAggregation(AppSettings.History.FolderPath, stationGuid, result);
+      }
+
+      return result;
     }
   }
 }

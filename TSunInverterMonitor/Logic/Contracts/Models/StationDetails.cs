@@ -31,8 +31,6 @@ namespace NZZ.TSIM.Contracts.Models
     public string ActivePowerNamed { get; set; } = "";
     [JsonPropertyName("totalPeakPower")]
     public double TodayPeakPower { get; set; }
-    [JsonPropertyName("totalPeakPowerNamed")]
-    public string TodayPeakPowerNamed { get; set; } = "";
 
     [JsonPropertyName("co2Reduced")]
     public string Co2Reduced { get; set; } = "";

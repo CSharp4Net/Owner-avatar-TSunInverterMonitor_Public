@@ -12,43 +12,6 @@ namespace NZZ.TSIM.WinApp
 {
   partial class FormMain
   {
-    protected override void OnShown(EventArgs e)
-    {
-      base.OnShown(e);
-
-      try
-      {
-        IsBusy = true;
-
-        if (!Directory.Exists(AppDataPath.LogFolderPath))
-          Directory.CreateDirectory(AppDataPath.LogFolderPath);
-
-        AppSettings = ConfigFile.LoadSettings();
-        ServiceConnection = new Connection(AppSettings.Service, AppDataPath.LogFolderPath);
-
-        TbServiceUserName.Text = Properties.Settings.Default.LastUserName;
-
-        if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.LastPassword))
-          TbServicePassword.Text = Encoding.UTF8.GetString(Convert.FromBase64String(Properties.Settings.Default.LastPassword));
-
-        if (AppSettings.AutoMaximizeAfterStart)
-          this.WindowState = FormWindowState.Maximized;
-
-        if (AppSettings.AutoLoginAfterStart &&
-          !string.IsNullOrWhiteSpace(TbServiceUserName.Text) &&
-          !string.IsNullOrWhiteSpace(TbServicePassword.Text))
-          BtnConnect_Click(this, e);
-      }
-      catch (Exception ex)
-      {
-        Program.HandleException(ex);
-      }
-      finally
-      {
-        IsBusy = false;
-      }
-    }
-
     private void BtnOpenSettings_Click(object sender, EventArgs e)
     {
       new FormSettings(AppSettings).ShowDialog(this);
@@ -269,20 +232,29 @@ namespace NZZ.TSIM.WinApp
       }
     }
 
-    private void CbHistoryType_SelectedIndexChanged(object sender, EventArgs e)
+    private async void CbHistoryType_SelectedIndexChanged(object sender, EventArgs e)
     {
       try
       {
         IsBusy = true;
 
         if (SelectedHistoryType!.Key == "day")
+        {
           DpHistoryDate.CustomFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+          BtnEditManualValue.Enabled = false;
+        }
         else if (SelectedHistoryType!.Key == "month")
+        {
           DpHistoryDate.CustomFormat = "yyyy MMMM";
+          BtnEditManualValue.Enabled = true;
+        }
         else
+        {
           DpHistoryDate.CustomFormat = "yyyy";
+          BtnEditManualValue.Enabled = true;
+        }
 
-        LoadStationHistory();
+        await LoadStationHistory();
       }
       catch (Exception ex)
       {
@@ -294,13 +266,13 @@ namespace NZZ.TSIM.WinApp
       }
     }
 
-    private void DpHistoryDate_ValueChanged(object sender, EventArgs e)
+    private async void DpHistoryDate_ValueChanged(object sender, EventArgs e)
     {
       try
       {
         IsBusy = true;
 
-        LoadStationHistory();
+        await LoadStationHistory();
       }
       catch (Exception ex)
       {
@@ -332,13 +304,13 @@ namespace NZZ.TSIM.WinApp
         DpHistoryDate.Value = DpHistoryDate.Value.AddYears(1);
     }
 
-    private void BtnReloadHistory_Click(object sender, EventArgs e)
+    private async void BtnReloadHistory_Click(object sender, EventArgs e)
     {
       try
       {
         IsBusy = true;
 
-        LoadStationHistory(true);
+        await LoadStationHistory(true);
       }
       catch (Exception ex)
       {
@@ -368,6 +340,33 @@ namespace NZZ.TSIM.WinApp
 
       if (DpHistoryDate.Value >= DateTime.Today)
         BtnReloadHistory_Click(sender, e);
+    }
+
+    private async void BtnEditManualValue_Click(object sender, EventArgs e)
+    {
+      try
+      {
+        FormEditManualData form = new FormEditManualData();
+
+        StationAggregationReporterData? aggregationData = null;
+
+        if (SelectedHistoryType!.Key == "month")
+        {
+          aggregationData = await LoadStationAggregationOfMonth(SelectedStation!.Guid, DpHistoryDate.Value, false);
+        }
+        else // year
+        {
+          aggregationData = await LoadStationAggregationOfYear(SelectedStation!.Guid, DpHistoryDate.Value, false);
+        }
+
+        form.SetData(aggregationData);
+
+        DialogResult dialogReuslt = form.ShowDialog();
+      }
+      catch (Exception ex)
+      {
+        Program.HandleException(ex);
+      }
     }
   }
 }

@@ -1,5 +1,4 @@
-﻿using NZZ.TSIM.Contracts.Models;
-using NZZ.TSIM.WinApp.Models;
+﻿using NZZ.TSIM.WinApp.Models;
 using NZZ.TSIM.WinApp.Statics;
 
 namespace NZZ.TSIM.WinApp
