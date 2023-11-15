@@ -1,3 +1,10 @@
+# Achtung @ 2023-11-15
+
+Die Weiterentwicklung wurde eingestellt, da der Anbieter TSUN in Eigenregie Messwerte löscht, nur weil diese ohne WLAN-Verbindung und damit ohne Zeitstemepl erfasst wurden.
+D.h. die erfasste Gesamtleistung besteht nur aus Messwerten mit Zeitstempel, alles andere wird ignoriert.
+
+Des Weiteren ist die Datensicherung bei TSUN lückenhaft und es wird scheinbar nicht an Verbesserungen gearbeitet.
+
 # TSunInverterMonitor
 
 ## General info
